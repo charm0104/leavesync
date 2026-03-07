@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Authority Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+/* HEADER */
+
+.header{
+height:65px;
+background:#1e40af;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 30px;
+color:white;
+}
+
+.user-menu{
+position:relative;
+cursor:pointer;
+}
+
+.dropdown{
+display:none;
+position:absolute;
+right:0;
+top:40px;
+background:white;
+border-radius:6px;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.logout-btn{
+background:#e63946;
+color:white;
+border:none;
+padding:10px 20px;
+cursor:pointer;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+height:calc(100vh - 65px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:230px;
+background:white;
+border-right:1px solid #ddd;
+padding-top:20px;
+list-style:none;
+}
+
+.sidebar li{
+padding:15px 25px;
+cursor:pointer;
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.sidebar li:hover{
+background:#eef3fb;
+}
+
+.sidebar li.active{
+background:#dde8f9;
+font-weight:600;
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+padding:25px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:25px;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+margin-bottom:25px;
+}
+
+/* DASHBOARD CARDS */
+
+.stats{
+display:flex;
+gap:20px;
+margin-top:15px;
+}
+
+.stat-box{
+flex:1;
+background:#f8fafc;
+padding:20px;
+border-radius:6px;
+text-align:center;
+}
+
+.stat-box h4{
+color:#555;
+margin-bottom:5px;
+}
+
+.stat-box p{
+font-size:22px;
+font-weight:600;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#eef3fb;
+}
+
+/* INPUT */
+
+textarea{
+width:100%;
+padding:6px;
+border:1px solid #ccc;
+border-radius:4px;
+}
+
+/* BUTTONS */
+
+button{
+border:none;
+padding:6px 10px;
+border-radius:4px;
+cursor:pointer;
+}
+
+.approve{
+background:#28a745;
+color:white;
+}
+
+.reject{
+background:#dc3545;
+color:white;
+}
+
+/* STATUS */
+
+.status{
+padding:4px 10px;
+border-radius:10px;
+font-size:12px;
+}
+
+.pending{background:#ffc107;}
+.approved{background:#28a745;color:white;}
+.rejected{background:#dc3545;color:white;}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<h2>Authority Approval Panel</h2>
+
+<div class="user-menu" onclick="toggleMenu()">
+<i class="fa fa-user"></i> <span id="username"></span>
+
+<div class="dropdown" id="dropdown">
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+</div>
+
+<div class="container">
+
+<ul class="sidebar">
+
+<li class="active" onclick="showSection('dashboard',this)">
+<i class="fa fa-home"></i> Dashboard
+</li>
+
+<li onclick="showSection('requests',this)">
+<i class="fa fa-clock"></i> Pending Requests
+</li>
+
+<li onclick="showSection('history',this)">
+<i class="fa fa-history"></i> Faculty Leave History
+</li>
+
+<li onclick="showSection('analytics',this)">
+<i class="fa fa-chart-bar"></i> Leave Analytics
+</li>
+
+</ul>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="section card">
+
+<h3>Authority Dashboard Overview</h3>
+
+<div class="stats">
+
+<div class="stat-box">
+<h4>Total Requests</h4>
+<p id="totalCount">0</p>
+</div>
+
+<div class="stat-box">
+<h4>Pending</h4>
+<p id="pendingCount">0</p>
+</div>
+
+<div class="stat-box">
+<h4>Approved</h4>
+<p id="approvedCount">0</p>
+</div>
+
+<div class="stat-box">
+<h4>Rejected</h4>
+<p id="rejectedCount">0</p>
+</div>
+
+</div>
+
+</div>
+
+<!-- PENDING REQUESTS -->
+
+<div id="requests" class="section card" style="display:none">
+
+<h3>Faculty Leave Requests</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Faculty</th>
+<th>Start</th>
+<th>End</th>
+<th>Reason</th>
+<th>Status</th>
+<th>Remark</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="requestTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- FACULTY LEAVE HISTORY -->
+
+<div id="history" class="section card" style="display:none">
+
+<h3>Faculty Leave History</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Faculty</th>
+<th>Start</th>
+<th>End</th>
+<th>Status</th>
+<th>Remark</th>
+</tr>
+</thead>
+
+<tbody id="historyTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- ANALYTICS -->
+
+<div id="analytics" class="section card" style="display:none">
+
+<h3>Leave Analytics</h3>
+
+<canvas id="chart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* AUTH CHECK */
+
+if(localStorage.getItem("role")!=="authority"){
+window.location.href="index.html";
+}
+
+document.getElementById("username").innerText =
+localStorage.getItem("username");
+
+/* DROPDOWN */
+
+function toggleMenu(){
+let d=document.getElementById("dropdown");
+d.style.display=d.style.display==="block"?"none":"block";
+}
+
+/* LOGOUT */
+
+function logout(){
+localStorage.clear();
+window.location.href="index.html";
+}
+
+/* SECTION SWITCH */
+
+function showSection(id,el){
+
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+
+document.getElementById(id).style.display="block";
+
+document.querySelectorAll(".sidebar li").forEach(li=>li.classList.remove("active"));
+
+el.classList.add("active");
+
+}
+
+/* LOAD DATA */
+
+function loadRequests(){
+
+let leaves=JSON.parse(localStorage.getItem("leaves"))||[];
+
+let requestRows="";
+let historyRows="";
+
+let approved=0;
+let pending=0;
+let rejected=0;
+
+leaves.forEach((l,i)=>{
+
+if(l.status==="Approved") approved++;
+if(l.status==="Pending") pending++;
+if(l.status==="Rejected") rejected++;
+
+if(l.status==="Pending"){
+
+requestRows+=`
+<tr>
+<td>${l.faculty||"Faculty"}</td>
+<td>${l.start}</td>
+<td>${l.end}</td>
+<td>${l.reason}</td>
+<td><span class="status pending">Pending</span></td>
+<td><textarea id="remark-${i}">${l.remark||""}</textarea></td>
+<td>
+<button class="approve" onclick="updateStatus(${i},'Approved')">Approve</button>
+<button class="reject" onclick="updateStatus(${i},'Rejected')">Reject</button>
+</td>
+</tr>
+`;
+
+}
+
+historyRows+=`
+<tr>
+<td>${l.faculty||"Faculty"}</td>
+<td>${l.start}</td>
+<td>${l.end}</td>
+<td class="${l.status.toLowerCase()}">${l.status}</td>
+<td>${l.remark||""}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("requestTable").innerHTML=requestRows;
+document.getElementById("historyTable").innerHTML=historyRows;
+
+document.getElementById("totalCount").innerText=approved+pending+rejected;
+document.getElementById("pendingCount").innerText=pending;
+document.getElementById("approvedCount").innerText=approved;
+document.getElementById("rejectedCount").innerText=rejected;
+
+drawChart(approved,pending,rejected);
+
+}
+
+/* UPDATE STATUS */
+
+function updateStatus(index,status){
+
+let leaves=JSON.parse(localStorage.getItem("leaves"))||[];
+
+leaves[index].status=status;
+
+leaves[index].remark=document.getElementById("remark-"+index).value;
+
+localStorage.setItem("leaves",JSON.stringify(leaves));
+
+loadRequests();
+
+}
+
+/* CHART */
+
+function drawChart(a,p,r){
+
+new Chart(document.getElementById("chart"),{
+
+type:"pie",
+
+data:{
+labels:["Approved","Pending","Rejected"],
+datasets:[{
+data:[a,p,r],
+backgroundColor:["#28a745","#ffc107","#dc3545"]
+}]
+}
+
+});
+
+}
+
+loadRequests();
+
+</script>
+
+</body>
+</html>
