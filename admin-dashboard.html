@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+/* HEADER */
+
+.header{
+height:65px;
+background:#1e40af;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 30px;
+color:white;
+}
+
+.user-menu{
+position:relative;
+cursor:pointer;
+}
+
+.dropdown{
+display:none;
+position:absolute;
+right:0;
+top:40px;
+background:white;
+border-radius:6px;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.logout-btn{
+background:#e63946;
+color:white;
+border:none;
+padding:10px 20px;
+cursor:pointer;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+height:calc(100vh - 65px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:230px;
+background:white;
+border-right:1px solid #ddd;
+padding-top:20px;
+}
+
+.sidebar li{
+padding:15px 25px;
+cursor:pointer;
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.sidebar li:hover{
+background:#eef3fb;
+}
+
+.sidebar li.active{
+background:#dde8f9;
+font-weight:600;
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+padding:25px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:25px;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+margin-bottom:25px;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#eef3fb;
+}
+
+/* INPUT */
+
+input,select{
+padding:8px;
+margin-top:6px;
+margin-bottom:12px;
+width:100%;
+border:1px solid #ccc;
+border-radius:4px;
+}
+
+button{
+background:#1e40af;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:4px;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<h2>Admin Coordinator Panel</h2>
+
+<div class="user-menu" onclick="toggleMenu()">
+<i class="fa fa-user"></i> Admin
+
+<div class="dropdown" id="dropdown">
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+</div>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+
+<ul class="sidebar">
+
+<li class="active" onclick="showSection('notifications',this)">
+<i class="fa fa-bell"></i> Notifications
+</li>
+
+<li onclick="showSection('schedule',this)">
+<i class="fa fa-calendar"></i> Class Scheduling
+</li>
+
+<li onclick="showSection('faculty',this)">
+<i class="fa fa-users"></i> Faculty Management
+</li>
+
+<li onclick="showSection('reports',this)">
+<i class="fa fa-chart-bar"></i> Leave Reports
+</li>
+
+</ul>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<!-- NOTIFICATIONS -->
+
+<div id="notifications" class="section card">
+
+<h3>Approved Leave Notifications</h3>
+
+<div id="approvedNotifications"></div>
+
+</div>
+
+<!-- CLASS SCHEDULING -->
+
+<div id="schedule" class="section card" style="display:none">
+
+<h3>Substitute Faculty Scheduling</h3>
+
+<label>Date</label>
+<input type="date" id="classDate">
+
+<label>Absent Faculty</label>
+<input type="text" id="absentFaculty">
+
+<label>Substitute Faculty</label>
+<input type="text" id="substituteFaculty">
+
+<button onclick="addSchedule()">Assign Substitute</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Absent Faculty</th>
+<th>Substitute</th>
+</tr>
+</thead>
+
+<tbody id="scheduleTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- FACULTY MANAGEMENT -->
+
+<div id="faculty" class="section card" style="display:none">
+
+<h3>Faculty Management</h3>
+
+<label>Faculty Name</label>
+<input type="text" id="facultyName">
+
+<label>Email</label>
+<input type="text" id="facultyEmail">
+
+<button onclick="addFaculty()">Add Faculty</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+</tr>
+</thead>
+
+<tbody id="facultyTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- REPORTS -->
+
+<div id="reports" class="section card" style="display:none">
+
+<h3>Leave Reports</h3>
+
+<canvas id="reportChart"></canvas>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* AUTH CHECK */
+
+if(localStorage.getItem("role")!=="admin"){
+window.location.href="index.html";
+}
+
+/* DROPDOWN */
+
+function toggleMenu(){
+
+let d=document.getElementById("dropdown");
+
+d.style.display=d.style.display==="block"?"none":"block";
+
+}
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.clear();
+
+window.location.href="index.html";
+
+}
+
+/* SECTION SWITCH */
+
+function showSection(id,el){
+
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+
+document.getElementById(id).style.display="block";
+
+document.querySelectorAll(".sidebar li").forEach(li=>li.classList.remove("active"));
+
+el.classList.add("active");
+
+}
+
+/* APPROVED LEAVE NOTIFICATIONS */
+
+function loadNotifications(){
+
+let leaves=JSON.parse(localStorage.getItem("leaves"))||[];
+
+let box=document.getElementById("approvedNotifications");
+
+box.innerHTML="";
+
+leaves.forEach(l=>{
+
+if(l.status==="Approved"){
+
+box.innerHTML+=`<p>✅ Leave approved from ${l.start} to ${l.end}</p>`;
+
+}
+
+});
+
+}
+
+/* SUBSTITUTE SCHEDULING */
+
+function addSchedule(){
+
+let date=document.getElementById("classDate").value;
+
+let absent=document.getElementById("absentFaculty").value;
+
+let substitute=document.getElementById("substituteFaculty").value;
+
+let table=document.getElementById("scheduleTable");
+
+table.innerHTML+=`
+<tr>
+<td>${date}</td>
+<td>${absent}</td>
+<td>${substitute}</td>
+</tr>
+`;
+
+}
+
+/* FACULTY MANAGEMENT */
+
+function addFaculty(){
+
+let name=document.getElementById("facultyName").value;
+
+let email=document.getElementById("facultyEmail").value;
+
+let table=document.getElementById("facultyTable");
+
+table.innerHTML+=`
+<tr>
+<td>${name}</td>
+<td>${email}</td>
+</tr>
+`;
+
+}
+
+/* REPORT GRAPH */
+
+function drawReport(){
+
+let leaves=JSON.parse(localStorage.getItem("leaves"))||[];
+
+let approved=0;
+let pending=0;
+
+leaves.forEach(l=>{
+
+if(l.status==="Approved") approved++;
+
+if(l.status==="Pending") pending++;
+
+});
+
+new Chart(document.getElementById("reportChart"),{
+
+type:"pie",
+
+data:{
+labels:["Approved","Pending"],
+datasets:[{
+data:[approved,pending],
+backgroundColor:["#28a745","#ffc107"]
+}]
+}
+
+});
+
+}
+
+loadNotifications();
+
+drawReport();
+
+</script>
+
+</body>
+</html>

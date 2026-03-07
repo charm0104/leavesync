@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Faculty Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+/* HEADER */
+
+.header{
+height:65px;
+background:#3f6fa0;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 30px;
+color:white;
+}
+
+.header-title{
+font-size:20px;
+font-weight:600;
+}
+
+.user-menu{
+position:relative;
+cursor:pointer;
+}
+
+.dropdown{
+display:none;
+position:absolute;
+right:0;
+top:40px;
+background:white;
+border-radius:6px;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.dropdown button{
+width:120px;
+padding:10px;
+border:none;
+cursor:pointer;
+font-weight:600;
+}
+
+.logout-btn{
+background:#e63946;
+color:white;
+}
+
+.logout-btn:hover{
+background:#c1121f;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+height:calc(100vh - 65px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:230px;
+background:white;
+border-right:1px solid #ddd;
+padding-top:20px;
+}
+
+.sidebar ul{
+list-style:none;
+}
+
+.sidebar li{
+padding:15px 25px;
+cursor:pointer;
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.sidebar li:hover{
+background:#eef3fb;
+}
+
+.sidebar li.active{
+background:#dde8f9;
+font-weight:600;
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+padding:25px;
+}
+
+/* DASHBOARD CARDS */
+
+.stats{
+display:flex;
+gap:20px;
+margin-bottom:25px;
+}
+
+.stat-card{
+flex:1;
+background:white;
+padding:20px;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+}
+
+.stat-card h3{
+font-size:14px;
+color:#777;
+}
+
+.stat-card p{
+font-size:22px;
+font-weight:600;
+margin-top:8px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:25px;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+margin-bottom:25px;
+}
+
+/* FORM */
+
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:4px;
+}
+
+button{
+background:#3f6fa0;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:4px;
+cursor:pointer;
+}
+
+button:hover{
+background:#2f577f;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#eef3fb;
+}
+
+/* STATUS */
+
+.status{
+padding:4px 10px;
+border-radius:10px;
+font-size:12px;
+}
+
+.pending{background:#ffc107;}
+.approved{background:#28a745;color:white;}
+.rejected{background:#dc3545;color:white;}
+
+/* NOTIFICATIONS */
+
+.notification{
+background:#fff3cd;
+padding:10px;
+border-radius:6px;
+margin-bottom:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<div class="header-title">
+Faculty Leave Portal
+</div>
+
+<div class="user-menu" onclick="toggleMenu()">
+<i class="fa fa-user"></i> <span id="username"></span>
+
+<div class="dropdown" id="dropdown">
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+
+<ul>
+
+<li class="active" onclick="showSection('dashboard',this)">
+<i class="fa fa-home"></i> Dashboard
+</li>
+
+<li onclick="showSection('apply',this)">
+<i class="fa fa-calendar-plus"></i> Apply Leave
+</li>
+
+<li onclick="showSection('status',this)">
+<i class="fa fa-clock"></i> Leave Status
+</li>
+
+<li onclick="showSection('history',this)">
+<i class="fa fa-history"></i> Leave History
+</li>
+
+<li onclick="showSection('profile',this)">
+<i class="fa fa-user"></i> Profile
+</li>
+
+</ul>
+
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="section">
+
+<div class="stats">
+
+<div class="stat-card">
+<h3>Total Leaves</h3>
+<p id="totalLeaves">0</p>
+</div>
+
+<div class="stat-card">
+<h3>Approved</h3>
+<p id="approvedLeaves">0</p>
+</div>
+
+<div class="stat-card">
+<h3>Pending</h3>
+<p id="pendingLeaves">0</p>
+</div>
+
+</div>
+
+<div class="card">
+<h3>Faculty Leave Analytics</h3>
+<canvas id="leaveChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Monthly Leave Trends</h3>
+<canvas id="monthlyChart"></canvas>
+</div>
+
+<div class="card">
+
+<h3>Notifications</h3>
+
+<div id="notifications"></div>
+
+</div>
+
+</div>
+
+<!-- APPLY -->
+
+<div id="apply" class="section card" style="display:none">
+
+<h3>Apply Leave</h3>
+
+<label>Start Date</label>
+<input type="date" id="start">
+
+<label>End Date</label>
+<input type="date" id="end">
+
+<label>Reason</label>
+<textarea id="reason"></textarea>
+
+<button onclick="applyLeave()">Submit Leave</button>
+
+</div>
+
+<!-- STATUS -->
+
+<div id="status" class="section card" style="display:none">
+
+<h3>Leave Status</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Start</th>
+<th>End</th>
+<th>Reason</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="statusTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- HISTORY -->
+
+<div id="history" class="section card" style="display:none">
+
+<h3>Leave History</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Start</th>
+<th>End</th>
+<th>Reason</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="historyTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- PROFILE -->
+
+<div id="profile" class="section card" style="display:none">
+
+<h3>Profile Information</h3>
+
+<p><b>Name:</b> <span id="name"></span></p>
+<p><b>Email:</b> <span id="email"></span></p>
+<p><b>Department:</b> Computer Science</p>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* AUTH */
+
+if(localStorage.getItem("role")!=="faculty"){
+window.location.href="index.html";
+}
+
+document.getElementById("username").innerText=localStorage.getItem("username");
+
+document.getElementById("name").innerText=localStorage.getItem("username");
+
+document.getElementById("email").innerText=
+JSON.parse(localStorage.getItem("users"))
+.find(u=>u.name===localStorage.getItem("username")).email;
+
+/* MENU */
+
+function toggleMenu(){
+
+let d=document.getElementById("dropdown");
+
+d.style.display=d.style.display==="block"?"none":"block";
+
+}
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.clear();
+
+window.location.href="index.html";
+
+}
+
+/* SECTION */
+
+function showSection(id,el){
+
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+
+document.getElementById(id).style.display="block";
+
+document.querySelectorAll(".sidebar li").forEach(li=>li.classList.remove("active"));
+
+el.classList.add("active");
+
+}
+
+/* APPLY */
+
+function applyLeave(){
+
+let start=document.getElementById("start").value;
+let end=document.getElementById("end").value;
+let reason=document.getElementById("reason").value;
+
+if(!start||!end||!reason){
+alert("Fill all fields");
+return;
+}
+
+let leaves=JSON.parse(localStorage.getItem("leaves"))||[];
+
+leaves.push({
+start,
+end,
+reason,
+status:"Pending"
+});
+
+localStorage.setItem("leaves",JSON.stringify(leaves));
+
+loadLeaves();
+
+}
+
+/* LOAD DATA */
+
+function loadLeaves(){
+
+let leaves=JSON.parse(localStorage.getItem("leaves"))||[];
+
+let rows="";
+let approved=0;
+let pending=0;
+let rejected=0;
+
+let months=new Array(12).fill(0);
+
+leaves.forEach(l=>{
+
+let month=new Date(l.start).getMonth();
+months[month]++;
+
+if(l.status==="Approved") approved++;
+if(l.status==="Pending") pending++;
+if(l.status==="Rejected") rejected++;
+
+rows+=`
+<tr>
+<td>${l.start}</td>
+<td>${l.end}</td>
+<td>${l.reason}</td>
+<td><span class="status ${l.status.toLowerCase()}">${l.status}</span></td>
+</tr>
+`;
+
+});
+
+document.getElementById("statusTable").innerHTML=rows;
+document.getElementById("historyTable").innerHTML=rows;
+
+document.getElementById("totalLeaves").innerText=leaves.length;
+document.getElementById("approvedLeaves").innerText=approved;
+document.getElementById("pendingLeaves").innerText=pending;
+
+drawChart(approved,pending,rejected);
+drawMonthlyChart(months);
+drawNotifications(leaves);
+
+}
+
+/* ANALYTICS GRAPH */
+
+function drawChart(a,p,r){
+
+new Chart(document.getElementById("leaveChart"),{
+
+type:"bar",
+
+data:{
+labels:["Approved","Pending","Rejected"],
+datasets:[{
+label:"Leave Requests",
+data:[a,p,r],
+backgroundColor:["#28a745","#ffc107","#dc3545"]
+}]
+}
+
+});
+
+}
+
+/* MONTHLY GRAPH */
+
+function drawMonthlyChart(months){
+
+new Chart(document.getElementById("monthlyChart"),{
+
+type:"line",
+
+data:{
+labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+datasets:[{
+label:"Leaves per Month",
+data:months,
+borderColor:"#3f6fa0",
+backgroundColor:"rgba(63,111,160,0.2)",
+fill:true
+}]
+}
+
+});
+
+}
+
+/* NOTIFICATIONS */
+
+function drawNotifications(leaves){
+
+let box=document.getElementById("notifications");
+
+box.innerHTML="";
+
+leaves.forEach(l=>{
+
+if(l.status==="Pending"){
+
+box.innerHTML+=`
+<div class="notification">
+⏳ Your leave request from ${l.start} to ${l.end} is pending approval.
+</div>
+`;
+
+}
+
+if(l.status==="Approved"){
+
+box.innerHTML+=`
+<div class="notification">
+✅ Your leave from ${l.start} to ${l.end} has been approved.
+</div>
+`;
+
+}
+
+if(l.status==="Rejected"){
+
+box.innerHTML+=`
+<div class="notification">
+❌ Your leave from ${l.start} to ${l.end} has been rejected.
+</div>
+`;
+
+}
+
+});
+
+}
+
+loadLeaves();
+
+</script>
+
+</body>
+</html>
