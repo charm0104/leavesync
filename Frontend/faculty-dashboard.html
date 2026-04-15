@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Faculty Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  background:linear-gradient(135deg,#eef2ff,#f8fafc);
+  padding-top:110px;
+  overflow-x:hidden;
+}
+
+#dashboard .card{
+  overflow:visible;
+}
+
+.header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  min-height:90px;
+  background:linear-gradient(90deg,#3f6fa0,#1e40af);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 30px;
+  color:white;
+  box-shadow:0 14px 36px rgba(15,23,42,.18);
+  z-index:999;
+}
+
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 24px 40px;
+}
+
+.header .brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.header .brand img{
+  width:50px;
+  height:50px;
+  object-fit:contain;
+  border-radius:12px;
+  background:white;
+  padding:8px;
+}
+
+.header .brand span{
+  display:block;
+  font-size:1rem;
+  letter-spacing:.02em;
+}
+
+.header .brand small{
+  display:block;
+  font-size:.8rem;
+  opacity:.85;
+}
+
+.top-nav{
+  flex:1;
+  margin:0 24px;
+}
+
+.sidebar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  list-style:none;
+  justify-content:center;
+  align-items:center;
+  margin:0;
+  padding:0;
+}
+
+.sidebar li{
+  padding:12px 18px;
+  cursor:pointer;
+  border-radius:999px;
+  background:rgba(255,255,255,.13);
+  transition:background .25s ease, color .25s ease, transform .2s ease;
+  color:#fff;
+  font-size:.95rem;
+}
+
+.sidebar li:hover{
+  background:rgba(255,255,255,.24);
+}
+
+.sidebar li.active{
+  background:#ffffff;
+  color:#1e40af;
+  font-weight:700;
+  box-shadow:0 10px 24px rgba(30,64,175,.18);
+}
+
+.user-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.notification-wrapper{
+  position:relative;
+}
+
+.notification-button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.12);
+  color:white;
+  cursor:pointer;
+  position:relative;
+}
+
+.notification-badge{
+  position:absolute;
+  top:4px;
+  right:4px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#ef4444;
+  color:white;
+  font-size:.75rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.notification-dropdown{
+  display:none;
+  position:absolute;
+  right:0;
+  top:52px;
+  width:320px;
+  max-height:360px;
+  overflow:auto;
+  background:white;
+  border-radius:14px;
+  box-shadow:0 16px 40px rgba(15,23,42,.18);
+  color:#0f172a;
+  z-index:1000;
+}
+
+.notification-dropdown.open{
+  display:block;
+}
+
+.notification-item{
+  padding:14px 16px;
+  border-bottom:1px solid #e2e8f0;
+  cursor:pointer;
+}
+
+.notification-item:last-child{border-bottom:none;}
+
+.notification-item:hover{
+  background:#f8fafc;
+}
+
+.notification-item strong{
+  display:block;
+  margin-bottom:6px;
+  color:#1e293b;
+}
+
+.notification-item small{
+  color:#475569;
+}
+
+.user-info{
+  font-size:.95rem;
+  opacity:.95;
+}
+
+.apply-btn{
+  background:#f59e0b;
+  color:#102a43;
+  font-weight:700;
+  border:none;
+  padding:10px 18px;
+  border-radius:999px;
+  cursor:pointer;
+  box-shadow:0 10px 25px rgba(245,158,11,.2);
+  transition:transform .2s ease, filter .2s ease;
+}
+
+.apply-btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.05);
+}
+
+.main{
+  width:100%;
+  padding:30px 0 0;
+}
+
+.card{
+  background:white;
+  padding:25px;
+  border-radius:16px;
+  margin-bottom:25px;
+  width:100%;
+  box-shadow:0 18px 40px rgba(15,23,42,.08);
+}
+
+@media (max-width: 920px) {
+  .header{
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:16px;
+    padding:18px 20px;
+  }
+
+  .top-nav{
+    order:3;
+    width:100%;
+    margin:0;
+  }
+
+  .user-actions{
+    width:100%;
+    justify-content:space-between;
+  }
+}
+
+@media (max-width: 680px) {
+  .sidebar li{
+    padding:10px 14px;
+    font-size:.88rem;
+  }
+
+  .header .brand img{
+    width:44px;
+    height:44px;
+  }
+}
+
+input,textarea,select{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.status-badge{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border-radius:999px;font-size:.82rem;font-weight:700;}
+.status-badge.pending{background:#fef3c7;color:#92400e;}
+.status-badge.approved{background:#dcfce7;color:#166534;}
+.status-badge.rejected{background:#fee2e2;color:#991b1b;}
+.urgent-row{background:#fef2f2;}
+
+.filter-row,
+.date-row{
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.filter-item,
+.date-item{
+  flex:1 1 48%;
+  min-width:190px;
+}
+
+.filter-item label,
+.date-item label{
+  display:block;
+  margin-bottom:6px;
+  font-size:.95rem;
+  color:#334155;
+}
+
+@media (max-width: 700px) {
+  .filter-row,
+  .date-row{
+    flex-direction:column;
+  }
+}
+
+button{
+background:#1e40af;
+color:white;
+border:none;
+padding:10px 18px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:disabled{
+background:#94a3b8;
+cursor:not-allowed;
+}
+
+.error{
+color:red;
+font-size:13px;
+margin-top:-5px;
+margin-bottom:10px;
+}
+
+.dashboard-hero{
+  margin:0;
+  padding:0;
+  background:none;
+}
+
+.slider{
+  width:100vw;
+  max-width:100vw;
+  height:75vh;
+  margin:0 calc(-50vw + 50%);
+  border-radius:0;
+  overflow:hidden;
+  position:relative;
+}
+
+.slide{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity 1s ease-in-out;
+}
+
+.slide.active{
+opacity:1;
+}
+
+.overlay{
+  position:absolute;
+  bottom:30px;
+  left:30px;
+  right:30px;
+  max-width:520px;
+  color:white;
+  background:rgba(0,0,0,0.55);
+  padding:22px 24px;
+  border-radius:16px;
+}
+
+.overlay h2{
+  font-size:2.4rem;
+  margin:0 0 10px;
+  line-height:1.1;
+}
+
+.overlay p{
+  font-size:1rem;
+  line-height:1.6;
+  margin:0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="brand">
+    <img src="jims logo.jpg" alt="JIMS Logo">
+    <div>
+      <span>JIMS Rohini</span>
+      <small>Faculty Portal</small>
+    </div>
+  </div>
+
+  <nav class="top-nav">
+    <ul class="sidebar">
+      <li class="active" onclick="showSection('dashboard',this)">Dashboard</li>
+      <li onclick="showSection('apply',this)" data-section="apply">Apply Leave</li>
+      <li onclick="showSection('urgent',this)">Urgent Leave</li>
+      <li onclick="showSection('history',this)">Leave History</li>
+    </ul>
+  </nav>
+
+  <div class="user-actions">
+    <div class="notification-wrapper">
+      <button type="button" class="notification-button" onclick="toggleNotifications()">🔔<span id="notificationBadge" class="notification-badge" style="display:none;">0</span></button>
+      <div id="notificationDropdown" class="notification-dropdown"></div>
+    </div>
+    <div class="user-info">👤 <span id="username"></span></div>
+    <button type="button" class="apply-btn" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main">
+
+<div id="dashboard" class="section dashboard-hero">
+
+<div class="slider">
+
+<img src="jims1.jpg" class="slide active">
+<img src="jims2.jpg" class="slide">
+<img src="jims3.jpg" class="slide">
+
+<div class="overlay">
+<h2>JIMS Rohini</h2>
+<p>Empowering Future Leaders</p>
+</div>
+
+</div>
+
+</div>
+
+<div id="apply" class="section card" style="display:none">
+
+<h3>Apply Leave</h3>
+
+<label>Start Date</label>
+<input type="date" id="start">
+<div id="startError" class="error"></div>
+
+<label>End Date</label>
+<input type="date" id="end">
+<div id="endError" class="error"></div>
+
+<label>Leave Type</label>
+<select id="leaveType">
+<option value="">Select Type</option>
+<option value="CL">Casual Leave</option>
+<option value="AL">Annual Leave</option>
+<option value="EL">Earned Leave</option>
+<option value="RH">Restricted Holiday</option>
+<option value="OD">On Duty</option>
+</select>
+
+<label>Reason</label>
+<textarea id="reason"></textarea>
+
+<label>Upload Document (PDF only)</label>
+<input type="file" id="document" accept="application/pdf">
+<div id="fileError" class="error"></div>
+
+<button id="submitBtn" onclick="applyLeave()">Submit</button>
+
+</div>
+
+<div id="urgent" class="section card" style="display:none">
+<h3>Urgent Leave</h3>
+
+<label>Urgent Date</label>
+<input type="date" id="urgentDate">
+
+<small id="urgentDateError" style="color:red; display:none;">
+    Cannot select past date
+</small>
+
+<div class="date-row">
+  <div class="date-item">
+    <label for="urgentStartTime">Start Time</label>
+    <select id="urgentStartTime">
+      <option value="08:00">8:00 A.M</option>
+      <option value="09:00">9:00 A.M</option>
+      <option value="10:00">10:00 A.M</option>
+      <option value="11:00">11:00 A.M</option>
+      <option value="12:00">12:00 P.M</option>
+      <option value="13:00">1:00 P.M</option>
+      <option value="14:00">2:00 P.M</option>
+      <option value="15:00">3:00 P.M</option>
+      <option value="16:00">4:00 P.M</option>
+      <option value="17:00">5:00 P.M</option>
+      <option value="18:00">6:00 P.M</option>
+    </select>
+  </div>
+  <div class="date-item">
+    <label for="urgentEndTime">End Time</label>
+    <select id="urgentEndTime">
+      <option value="08:00">8:00 A.M</option>
+      <option value="09:00">9:00 A.M</option>
+      <option value="10:00">10:00 A.M</option>
+      <option value="11:00">11:00 A.M</option>
+      <option value="12:00">12:00 P.M</option>
+      <option value="13:00">1:00 P.M</option>
+      <option value="14:00">2:00 P.M</option>
+      <option value="15:00">3:00 P.M</option>
+      <option value="16:00">4:00 P.M</option>
+      <option value="17:00">5:00 P.M</option>
+      <option value="18:00">6:00 P.M</option>
+    </select>
+  </div>
+</div>
+
+<small id="urgentTimeError" style="color:red; display:none;">
+    End time must be after start time
+</small>
+
+<label>Reason</label>
+<textarea id="urgentReason" placeholder="Enter reason"></textarea>
+
+<label>Upload PDF</label>
+<input type="file" id="urgentFile" accept="application/pdf">
+
+<small id="urgentFileError" style="color:red; display:none;">
+    Only PDF file is allowed
+</small>
+
+<button type="button" onclick="applyUrgentLeave()">Submit</button>
+</div>
+
+</div>
+
+<div id="history" class="section card" style="display:none">
+
+<h3>Leave History</h3>
+
+<div class="filter-row">
+  <div class="filter-item">
+    <label for="yearFilter">Year</label>
+    <select id="yearFilter" onchange="filterLeaves()">
+      <option value="">All Years</option>
+    </select>
+  </div>
+  <div class="filter-item">
+    <label for="monthFilter">Month</label>
+    <select id="monthFilter" onchange="filterLeaves()">
+      <option value="">All Months</option>
+      <option value="0">January</option>
+      <option value="1">February</option>
+      <option value="2">March</option>
+      <option value="3">April</option>
+      <option value="4">May</option>
+      <option value="5">June</option>
+      <option value="6">July</option>
+      <option value="7">August</option>
+      <option value="8">September</option>
+      <option value="9">October</option>
+      <option value="10">November</option>
+      <option value="11">December</option>
+    </select>
+  </div>
+</div>
+
+<div class="date-row">
+  <div class="date-item">
+    <label for="customStart">From</label>
+    <input type="date" id="customStart" onchange="filterLeaves()">
+  </div>
+  <div class="date-item">
+    <label for="customEnd">To</label>
+    <input type="date" id="customEnd" onchange="filterLeaves()">
+  </div>
+</div>
+
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Faculty</th>
+<th>Course</th>
+<th>Start</th>
+<th>End</th>
+<th>Type</th>
+<th>Status</th>
+<th>Remark</th>
+</tr>
+</thead>
+<tbody id="historyTable"></tbody>
+</table>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+const API_BASE = 'http://localhost:8080/api';
+let leaveHistory = [];
+let notifications = [];
+let selectedLeaveId = null;
+let notificationDropdownOpen = false;
+
+function getToken(){
+  return localStorage.getItem('token');
+}
+
+function getAuthHeaders(){
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function handleAuthError(){
+  alert('Session expired or unauthorized. Please log in again.');
+  logout();
+}
+
+function logout(){
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('role');
+  localStorage.removeItem('username');
+  window.location.href = 'index.html';
+}
+
+function requireAuth(){
+  if (!getToken()) {
+    logout();
+  }
+}
+
+document.getElementById('username').innerText = localStorage.getItem('username') || 'Faculty';
+
+function showSection(id,el){
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (id === 'history') {
+    loadLeaveHistory();
+  }
+  closeNotificationDropdown();
+}
+
+function toggleNotifications(){
+  notificationDropdownOpen = !notificationDropdownOpen;
+  const dropdown = document.getElementById('notificationDropdown');
+  if (!dropdown) return;
+  if (notificationDropdownOpen) {
+    dropdown.classList.add('open');
+  } else {
+    dropdown.classList.remove('open');
+  }
+}
+
+function closeNotificationDropdown(){
+  const dropdown = document.getElementById('notificationDropdown');
+  if (dropdown) dropdown.classList.remove('open');
+  notificationDropdownOpen = false;
+}
+
+async function loadNotifications(){
+  const token = getToken();
+  if (!token) return handleAuthError();
+
+  try {
+    const response = await fetch(`${API_BASE}/notifications/my`, {
+      headers: getAuthHeaders()
+    });
+    if (response.status === 401 || response.status === 403) return handleAuthError();
+    if (!response.ok) throw new Error(await response.text() || 'Unable to load notifications.');
+    notifications = await response.json();
+    renderNotifications();
+  } catch (err) {
+    console.warn('Notification load failed:', err.message);
+  }
+}
+
+function renderNotifications(){
+  const dropdown = document.getElementById('notificationDropdown');
+  const badge = document.getElementById('notificationBadge');
+  if (!dropdown || !badge) return;
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+  if (unreadCount > 0) {
+    badge.style.display = 'flex';
+    badge.innerText = unreadCount;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  if (!notifications.length) {
+    dropdown.innerHTML = '<div class="notification-item"><strong>No notifications</strong><small>All caught up!</small></div>';
+    return;
+  }
+
+  dropdown.innerHTML = notifications.map(note => {
+    const title = note.message || note.body || 'Leave update';
+    const created = note.createdAt ? new Date(note.createdAt).toLocaleDateString() : '';
+    return `<div class="notification-item" onclick="handleNotificationClick('${note.id || ''}', '${note.leaveId || note.referenceId || ''}')">
+      <strong>${title}</strong>
+      <small>${created}</small>
+    </div>`;
+  }).join('');
+}
+
+function handleNotificationClick(notificationId, leaveId){
+  if (notificationId) markNotificationRead(notificationId);
+  notificationDropdownOpen = false;
+  closeNotificationDropdown();
+  selectedLeaveId = leaveId || null;
+  showSection('history', document.querySelector('[onclick="showSection(\'history\',this)"]'));
+}
+
+async function markNotificationRead(id){
+  try {
+    const response = await fetch(`${API_BASE}/notifications/read/${id}`, {
+      method: 'PUT',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) return;
+    notifications = notifications.map(note => note.id === id ? { ...note, read: true } : note);
+    renderNotifications();
+  } catch (err) {
+    console.warn('Failed to mark notification read:', err.message);
+  }
+}
+
+function statusBadge(status){
+  const key = (status || '').toLowerCase();
+  if (key === 'approved') return '<span class="status-badge approved">Approved</span>';
+  if (key === 'rejected') return '<span class="status-badge rejected">Rejected</span>';
+  if (key === 'pending') return '<span class="status-badge pending">Pending</span>';
+  return `<span class="status-badge">${status || 'Unknown'}</span>`;
+}
+
+function formatDate(value){
+  return value || '-';
+}
+
+async function applyLeave(){
+  const token = getToken();
+  if (!token) return handleAuthError();
+
+  const fromDate = document.getElementById('start').value;
+  const toDate = document.getElementById('end').value;
+  const leaveType = document.getElementById('leaveType').value;
+  const reason = document.getElementById('reason').value.trim();
+  const fileInput = document.getElementById('document');
+
+  if (!fromDate || !toDate || !leaveType || !reason) {
+    alert('Please complete all fields before submitting.');
+    return;
+  }
+  if (!validateStartDate() || !validateEndDate()) return;
+
+  const formData = new FormData();
+  const leaveData = {
+  fromDate: document.getElementById("start").value,
+  toDate: document.getElementById("end").value,
+  leaveType: document.getElementById("leaveType").value,
+  reason: document.getElementById("reason").value,
+  urgent: false,
+  timeSlot: "FULL_DAY"
+};
+
+formData.append("leave", JSON.stringify(leaveData));
+
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    if (file.type !== 'application/pdf') {
+      alert('Only PDF files are allowed.');
+      return;
+    }
+    formData.append('document', file);
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/leaves/apply`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: formData
+    });
+    if (response.status === 401 || response.status === 403) return handleAuthError();
+    if (!response.ok) throw new Error(await response.text() || 'Could not submit the leave.');
+    alert('Leave applied successfully.');
+    document.getElementById('reason').value = '';
+    document.getElementById('document').value = '';
+    document.getElementById('start').value = '';
+    document.getElementById('end').value = '';
+    document.getElementById('leaveType').value = '';
+  } catch (err) {
+    alert('Leave submission failed: ' + err.message);
+  }
+}
+
+async function applyUrgentLeave(){
+  const token = getToken();
+  if (!token) return handleAuthError();
+
+  const date = document.getElementById('urgentDate').value;
+  const startTime = document.getElementById('urgentStartTime').value;
+  const endTime = document.getElementById('urgentEndTime').value;
+  const reason = document.getElementById('urgentReason').value.trim();
+
+  if (!date || !startTime || !endTime || !reason) {
+    alert('Please complete all urgent leave fields.');
+    return;
+  }
+  
+
+const leaveData = {
+  fromDate: date,
+  toDate: date,
+  reason: reason,
+  urgent: true,
+  timeSlot: `${startTime}-${endTime}`
+};
+
+  try {
+    const response = await fetch(`${API_BASE}/leaves/apply-urgent`, {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(leaveData)
+    });
+    if (response.status === 401 || response.status === 403) return handleAuthError();
+    if (!response.ok) throw new Error(await response.text() || 'Could not submit the urgent leave.');
+    alert('Urgent leave submitted successfully.');
+    document.getElementById('urgentDate').value = '';
+    document.getElementById('urgentReason').value = '';
+  } catch (err) {
+    alert('Urgent leave submission failed: ' + err.message);
+  }
+}
+
+function validateStartDate(){
+  const start = document.getElementById('start').value;
+  const today = new Date().toISOString().split('T')[0];
+  if (!start) return false;
+  if (start === today) {
+    document.getElementById('startError').innerText = 'Cannot select today';
+    return false;
+  }
+  if (start < today) {
+    document.getElementById('startError').innerText = 'Past date not allowed';
+    return false;
+  }
+  document.getElementById('startError').innerText = '';
+  return true;
+}
+
+function validateEndDate(){
+  const start = document.getElementById('start').value;
+  const end = document.getElementById('end').value;
+  if (!start || !end) {
+    document.getElementById('endError').innerText = '';
+    return false;
+  }
+  if (end < start) {
+    document.getElementById('endError').innerText = 'End date must be after start';
+    return false;
+  }
+  document.getElementById('endError').innerText = '';
+  return true;
+}
+
+function filterLeaves(){
+  const year = document.getElementById('yearFilter').value;
+  const month = document.getElementById('monthFilter').value;
+  const start = document.getElementById('customStart').value;
+  const end = document.getElementById('customEnd').value;
+  const filtered = leaveHistory.filter(l => {
+    const fromDate = l.fromDate || l.start || l.startDate || '';
+    if (year) {
+      const d = new Date(fromDate);
+      if (d.getFullYear().toString() !== year) return false;
+    }
+    if (month) {
+      const d = new Date(fromDate);
+      if (d.getMonth().toString() !== month) return false;
+    }
+    if (start && fromDate < start) return false;
+    if (end && (l.toDate || l.end || l.endDate || '') > end) return false;
+    return true;
+  });
+  renderLeaveHistory(filtered);
+}
+
+async function loadLeaveHistory(){
+  const token = getToken();
+  if (!token) return handleAuthError();
+
+  try {
+    const response = await fetch(`${API_BASE}/leaves/history/${userId}`, {
+      headers: getAuthHeaders()
+    });
+    if (response.status === 401 || response.status === 403) return handleAuthError();
+    if (!response.ok) throw new Error(await response.text() || 'Could not load leave history.');
+    const data = await response.json();
+    leaveHistory = Array.isArray(data) ? data : data.history || data.leaves || [];
+    renderLeaveHistory(leaveHistory);
+  } catch (err) {
+    alert('Leave history load failed: ' + err.message);
+  }
+}
+
+function renderLeaveHistory(leaves){
+  const rows = leaves.map(l => {
+    const fromDate = formatDate(l.fromDate || l.start || l.startDate);
+    const toDate = formatDate(l.toDate || l.end || l.endDate);
+    const leaveType = l.leaveType || l.type || '-';
+    const statusHtml = statusBadge(l.status);
+    const remarks = l.remarks || l.remark || '-';
+    const rowId = l.id ? `leave-${l.id}` : '';
+    const highlightClass = selectedLeaveId && l.id && l.id.toString() === selectedLeaveId.toString() ? 'urgent-row' : '';
+    return `<tr id="${rowId}" class="${highlightClass}">
+      <td>${l.applicantName || '-'}</td>   
+      <td>${l.course || '-'}</td>
+      <td>${fromDate}</td>
+      <td>${toDate}</td>
+      <td>${leaveType}</td>
+      <td>${statusHtml}</td>
+      <td>${remarks}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('historyTable').innerHTML = rows || '<tr><td colspan="5">No records found.</td></tr>';
+  if (selectedLeaveId) {
+    const row = document.getElementById(`leave-${selectedLeaveId}`);
+    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function loadYears(){
+  const y = document.getElementById('yearFilter');
+  const current = new Date().getFullYear();
+  for (let i = 2000; i <= current + 5; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.text = i;
+    y.appendChild(opt);
+  }
+}
+
+function updateUrgentDateMin(){
+  const urgentDateInput = document.getElementById('urgentDate');
+  const today = new Date().toISOString().split('T')[0];
+  if (urgentDateInput) urgentDateInput.setAttribute('min', today);
+}
+
+requireAuth();
+loadYears();
+updateUrgentDateMin();
+loadNotifications();
+
+const urgentFileInput = document.getElementById('urgentFile');
+if (urgentFileInput) {
+  urgentFileInput.addEventListener('change', function () {
+    const file = this.files[0];
+    const error = document.getElementById('urgentFileError');
+    if (file && file.type !== 'application/pdf') {
+      error.style.display = 'block';
+      this.value = '';
+    } else {
+      error.style.display = 'none';
+    }
+  });
+}
+
+const urgentDateInput = document.getElementById('urgentDate');
+if (urgentDateInput) {
+  urgentDateInput.addEventListener('change', function () {
+    const selectedDate = new Date(this.value);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const error = document.getElementById('urgentDateError');
+    if (selectedDate < today) {
+      error.style.display = 'block';
+    } else {
+      error.style.display = 'none';
+    }
+  });
+}
+
+const urgentStartTime = document.getElementById('urgentStartTime');
+const urgentEndTime = document.getElementById('urgentEndTime');
+
+
+const startInput = document.getElementById('start');
+const endInput = document.getElementById('end');
+const reasonInput = document.getElementById('reason');
+const documentInput = document.getElementById('document');
+const leaveTypeInput = document.getElementById('leaveType');
+if (startInput) startInput.addEventListener('change', checkFormValidity);
+if (endInput) endInput.addEventListener('change', checkFormValidity);
+if (reasonInput) reasonInput.addEventListener('input', checkFormValidity);
+if (documentInput) documentInput.addEventListener('change', checkFormValidity);
+if (leaveTypeInput) leaveTypeInput.addEventListener('change', checkFormValidity);
+
+let slides = document.querySelectorAll('.slide');
+let index = 0;
+setInterval(() => {
+  slides[index].classList.remove('active');
+  index = (index + 1) % slides.length;
+  slides[index].classList.add('active');
+}, 3000);
+
+</script>
+
+</body>
+</html>

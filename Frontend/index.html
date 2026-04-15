@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Leave Management System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+/* PAGE BACKGROUND */
+
+body{
+height:100vh;
+background:#eeeeee;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+/* HEADER BAR */
+
+.header{
+width:100%;
+background:white;
+display:flex;
+align-items:center;
+padding:12px 40px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* LOGO AREA */
+
+.logo-area{
+display:flex;
+align-items:center;
+gap:18px;
+}
+
+.logo-area img{
+height:60px;
+}
+
+/* TITLES */
+
+.title-group{
+display:flex;
+flex-direction:column;
+}
+
+.portal-title{
+font-size:22px;
+font-weight:600;
+color:#1e40af;
+}
+
+.portal-subtitle{
+font-size:13px;
+color:#555;
+}
+
+/* LOGIN AREA */
+
+.page-wrapper{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+width:100%;
+}
+
+/* MAIN LOGIN BOX */
+
+.container{
+width:1000px;
+height:600px;
+display:flex;
+border-radius:18px;
+overflow:hidden;
+background:white;
+box-shadow:0 30px 60px rgba(0,0,0,0.08);
+}
+
+/* LEFT PANEL */
+
+.info{
+width:45%;
+background:linear-gradient(135deg,#1e40af,#2563eb);
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:60px;
+text-align:center;
+}
+
+.info h1{
+font-size:28px;
+margin-bottom:20px;
+}
+
+.info p{
+font-size:14px;
+opacity:0.9;
+}
+
+.switch-btn{
+margin-top:35px;
+padding:12px 30px;
+border-radius:30px;
+border:2px solid white;
+background:transparent;
+color:white;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+}
+
+.switch-btn:hover{
+background:white;
+color:#1e40af;
+}
+
+/* FORMS */
+
+.forms{
+width:55%;
+position:relative;
+overflow:hidden;
+}
+
+.form{
+position:absolute;
+width:100%;
+height:100%;
+padding:80px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+transition:0.5s ease;
+opacity:0;
+}
+
+.form.login{ left:0; opacity:1; }
+.form.signup{ left:100%; }
+
+.container.active .form.login{
+left:-100%;
+opacity:0;
+}
+
+.container.active .form.signup{
+left:0;
+opacity:1;
+}
+
+.form h2{
+margin-bottom:25px;
+font-size:24px;
+}
+
+input, select{
+margin:12px 0;
+padding:14px;
+border-radius:10px;
+border:1px solid #d1d5db;
+font-size:14px;
+}
+
+button.submit{
+margin-top:25px;
+padding:14px;
+border:none;
+border-radius:10px;
+background:#1e40af;
+color:white;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+button.submit:hover{
+background:#2563eb;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="logo-area">
+<img src="jims logo.jpg" alt="JIMS Logo">
+
+<div class="title-group">
+<div class="portal-title">Leave Management System</div>
+<div class="portal-subtitle">
+Jagan Institute of Management Studies – Rohini, Delhi
+</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- LOGIN AREA -->
+
+<div class="page-wrapper">
+
+<div class="container" id="container">
+
+<div class="info">
+<h1>Welcome</h1>
+<p>Role based leave approval system</p>
+<button class="switch-btn" id="switchBtn" onclick="toggleSlide()">Create Account</button>
+</div>
+
+<div class="forms">
+
+<!-- LOGIN -->
+<div class="form login">
+<h2>Login</h2>
+
+<input type="email" id="loginEmail" placeholder="Email">
+
+<input type="password" id="loginPassword" placeholder="Password">
+
+<select id="loginRole">
+<option value="">Select Role</option>
+<option value="FACULTY">👩‍🏫 Faculty</option>
+<option value="DEPARTMENT_HEAD">⚖️ Department Head</option>
+<option value="ADMIN">🧑‍💼 Admin</option>
+</select>
+
+<button class="submit" onclick="login()">Login</button>
+
+</div>
+
+<!-- SIGNUP -->
+<div class="form signup">
+<h2>Create Account</h2>
+
+<input type="text" id="signupName" placeholder="Full Name">
+
+<input type="email" id="signupEmail" placeholder="Email">
+
+<input type="password" id="signupPassword" placeholder="Password">
+
+
+<select id="signupCourse" required>
+  <option value="">Select Course</option>
+  <option value="BCA">Bachelor of Computer Applications (BCA)</option>
+  <option value="MCA">Master of Computer Applications (MCA)</option>
+  <option value="BBA">Bachelor of Business Administration (BBA)</option>
+  <option value="BCOM">B.A Hons (Economics)</option>
+  <option value="BCOM">PGDM (International Business)</option>
+  <option value="BCOM">PGDM (Retail Management)</option>
+  <option value="PGDM">Post Graduate Diploma in Management (PGDM)</option>
+  <option value="BCOM">Fellow Program in Management (FPM)</option>
+
+
+</select>
+
+<select id="signupRole">
+<option value="">Select Role</option>
+<option value="FACULTY">👩‍🏫 Faculty</option>
+<option value="DEPARTMENT_HEAD">⚖️ Department Head</option>
+<option value="ADMIN">🧑‍💼 Admin</option>
+</select>
+
+<button class="submit" onclick="register()">Register</button>
+
+</div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+const API_BASE = 'http://localhost:8080/api';
+
+function handleApiError(response){
+  if (response.status === 401 || response.status === 403) {
+    alert('Unauthorized request. Please log in again.');
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+    return true;
+  }
+  return false;
+}
+
+/* SLIDE LOGIN / SIGNUP */
+
+function toggleSlide(){
+  const container=document.getElementById('container');
+  const btn=document.getElementById('switchBtn');
+  container.classList.toggle('active');
+  btn.innerText = container.classList.contains('active') ? 'Back to Login' : 'Create Account';
+}
+
+/* REGISTER */
+
+async function register(){
+      event.preventDefault();
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPassword').value.trim();
+  const role=document.getElementById('signupRole').value.toUpperCase();
+  const course = document.getElementById('signupCourse').value;
+
+  if(!name || !email || !pass || !role || !course){
+    alert('Please fill all fields');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password: pass, role, course })
+    });
+
+    if (handleApiError(response)) return;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Registration failed');
+    }
+
+    const data = await response.json().catch(() => ({}));
+    alert(data.message || 'Account created successfully!');
+    toggleSlide();
+  } catch (err) {
+    alert('Registration failed: ' + err.message);
+  }
+}
+
+/* LOGIN */
+
+async function login(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value.trim();
+  const role=document.getElementById('loginRole').value;
+
+  if(!email || !pass || !role ){
+    alert('Please fill all fields');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+
+    if (handleApiError(response)) return;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Login failed');
+    }
+
+    const data = await response.json();
+    const token = data.token || data.accessToken || data.jwt;
+    const username = data.username || data.name || email;
+    const userRole = (data.role || role).toUpperCase();
+    const userId = data.userId || data.id || (data.user && data.user.id);
+
+    if (!token) {
+      throw new Error('No token received from server');
+    }
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('username', username);
+    localStorage.setItem('role', userRole);
+    if (userId) localStorage.setItem('userId', userId);
+
+    if (userRole === 'FACULTY') {
+      window.location.href = 'faculty-dashboard.html';
+    } else if (userRole === 'DEPARTMENT_HEAD') {
+      window.location.href = 'department-head (6).html';
+    } else if (userRole === 'ADMIN') {
+      window.location.href = 'admin-dashboard.html';
+    } else {
+      window.location.href = 'index.html';
+    }
+  } catch (err) {
+    alert('Login failed: ' + err.message);
+  }
+}
+
+</script>
+
+</body>
+</html>

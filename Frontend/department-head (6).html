@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Department Head Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#f4f7fb;}
+
+/* HEADER */
+.header{
+background:linear-gradient(90deg,#3f6fa0,#1e40af);
+display:flex;justify-content:space-between;align-items:center;
+padding:20px 40px;color:white;
+}
+
+.brand{display:flex;align-items:center;gap:12px;}
+.brand img{width:55px;height:55px;background:white;border-radius:10px;padding:5px;}
+
+.sidebar{display:flex;gap:12px;list-style:none;}
+.sidebar li{
+padding:12px 20px;border-radius:999px;
+background:rgba(255,255,255,.2);cursor:pointer;
+}
+.sidebar li.active{
+background:white;color:#1e40af;font-weight:600;
+}
+
+/* BANNER */
+.banner{width:100%;height:350px;}
+.banner img{width:100%;height:100%;object-fit:cover;}
+
+.container{max-width:1400px;margin:auto;padding:30px;}
+.card{background:white;padding:30px;border-radius:14px;margin-bottom:25px;}
+
+select,input{
+padding:12px;border-radius:6px;margin-right:10px;margin-bottom:15px;
+}
+
+/* CARDS */
+.card-stats{display:flex;gap:15px;margin-top:15px;flex-wrap:wrap;}
+.stat-card{
+flex:1;min-width:150px;padding:22px;border-radius:16px;text-align:center;
+cursor:pointer;font-weight:700;color:#1f2937;position:relative;
+transition:transform .2s ease,box-shadow .2s ease;
+}
+.stat-card:hover{transform:translateY(-6px);box-shadow:0 20px 45px rgba(15,23,42,.14);}
+.total-card{background:#e0f2fe;}
+.pending-card{background:#fde68a;}
+.approved-card{background:#dcfce7;}
+.rejected-card{background:#fee2e2;}
+.urgent-card{background:#fee2e2;border:1px solid #fca5a5;}
+.urgent-card .badge{position:absolute;top:16px;right:18px;width:20px;height:20px;border-radius:50%;background:#dc2626;color:white;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th{background:#1e40af;color:white;padding:14px;}
+td{padding:14px;border-bottom:1px solid #ddd;text-align:center;}
+
+.back-btn{
+background:#1e40af;color:white;border:none;
+padding:10px 16px;border-radius:6px;cursor:pointer;margin-bottom:15px;
+}
+
+.action-btn{
+padding:8px 12px;border:none;border-radius:6px;cursor:pointer;margin:2px;
+}
+.approve-btn{background:#22c55e;color:white;}
+.reject-btn{background:#ef4444;color:white;}
+.view-btn{background:#3b82f6;color:white;}
+
+.status-badge{padding:6px 10px;border-radius:999px;font-size:.82rem;font-weight:700;display:inline-block;}
+.status-badge.pending{background:#fef3c7;color:#92400e;}
+.status-badge.approved{background:#dcfce7;color:#166534;}
+.status-badge.rejected{background:#fee2e2;color:#991b1b;}
+.status-badge.urgent{background:#fee2e2;color:#991b1b;border:1px solid #f87171;}
+.urgent-row{background:#fff1f2;}
+
+.modal-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.58);align-items:center;justify-content:center;z-index:10000;padding:20px;overflow:auto;}
+.modal-backdrop.open{display:flex;}
+.modal-card{background:white;padding:30px;border-radius:16px;max-width:760px;width:100%;box-shadow:0 20px 50px rgba(15,23,42,.22);transform:translateY(-20px);opacity:0;transition:opacity .25s ease, transform .25s ease;}
+.modal-backdrop.open .modal-card{transform:translateY(0);opacity:1;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+.modal-row p{margin:10px 0;}
+.modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+.modal-actions button{flex:1;min-width:140px;}
+.modal-actions .close-btn{background:#1e40af;color:white;}
+.view-link,.download-link{display:inline-block;margin-top:10px;color:#1e40af;text-decoration:none;font-weight:600;}
+.view-link:hover,.download-link:hover{text-decoration:underline;}
+
+textarea{
+width:100%;
+height:120px;
+padding:14px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="brand">
+<img src="jims logo.jpg">
+<div><b>JIMS Rohini</b><br><small>Department Head</small></div>
+</div>
+
+<ul class="sidebar">
+<li id="nav-dashboard" class="active" onclick="showSection('dashboard',this)">Dashboard</li>
+<li id="nav-requests" onclick="showSection('requests',this)">Requests</li>
+<li id="nav-history" onclick="showSection('history',this)">History</li>
+</ul>
+
+<div>
+👤 <span id="username"></span>
+<button onclick="logout()">Logout</button>
+</div>
+</div>
+
+<div class="banner" id="banner">
+<img src="jims1.jpg">
+</div>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="section card">
+<h1>Leave Management Dashboard</h1>
+
+<div class="filter-row">
+  <div class="filter-item">
+    <label>Faculty Member</label>
+    <select id="facultyFilter" onchange="setFacultyFilter(this.value)">
+      <option value="">All Faculty</option>
+    </select>
+  </div>
+  <div class="filter-item">
+    <label>Status</label>
+    <select id="statusFilter" onchange="setStatusFilter(this.value)">
+      <option value="ALL">All</option>
+      <option value="PENDING">Pending</option>
+      <option value="APPROVED">Approved</option>
+      <option value="REJECTED">Rejected</option>
+      <option value="URGENT">Urgent</option>
+    </select>
+  </div>
+  <div class="filter-item">
+    <label>Date</label>
+    <input type="date" id="dateFilter" onchange="setDateFilter(this.value)">
+  </div>
+</div>
+
+<div class="card-stats">
+<div class="stat-card total-card" onclick="applyFilter('ALL')">
+Total Leaves<h2 id="totalCount">0</h2></div>
+<div class="stat-card pending-card" onclick="applyFilter('PENDING')">
+Pending<h2 id="pendingCount">0</h2></div>
+<div class="stat-card approved-card" onclick="applyFilter('APPROVED')">
+Approved<h2 id="approvedCount">0</h2></div>
+<div class="stat-card rejected-card" onclick="applyFilter('REJECTED')">
+Rejected<h2 id="rejectedCount">0</h2></div>
+<div class="stat-card urgent-card" onclick="applyFilter('URGENT')">
+Urgent<h2 id="urgentCount">0</h2><span class="badge">!</span></div>
+</div>
+<p id="urgentNotice" style="color:#b91c1c;font-weight:700;margin-top:12px;"></p>
+</div>
+
+<!-- REQUESTS -->
+<div id="requests" class="section card" style="display:none">
+<button class="back-btn" onclick="goBack()">⬅ Back</button>
+
+<table>
+<thead>
+<tr>
+<th>Faculty</th><th>Course</th><th>Type</th>
+<th>Start</th><th>End</th><th>Status</th><th>Urgent</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="reqTable"></tbody>
+</table>
+</div>
+
+<!-- HISTORY -->
+<div id="history" class="section card" style="display:none">
+<button class="back-btn" onclick="goBack()">⬅ Back</button>
+
+<div class="filter-row">
+  <div class="filter-item">
+    <label>Faculty Member</label>
+    <select id="historyFacultyFilter" onchange="setHistoryFaculty(this.value)">
+      <option value="">All Faculty</option>
+    </select>
+  </div>
+  <div class="filter-item">
+    <label>Status</label>
+    <select id="historyStatusFilter" onchange="setHistoryStatus(this.value)">
+      <option value="ALL">All</option>
+      <option value="PENDING">Pending</option>
+      <option value="APPROVED">Approved</option>
+      <option value="REJECTED">Rejected</option>
+    </select>
+  </div>
+  <div class="filter-item">
+    <label>Date</label>
+    <input type="date" id="historyDateFilter" onchange="setHistoryDate(this.value)">
+  </div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Faculty</th><th>Course</th><th>Type</th>
+<th>Start</th><th>End</th><th>Status</th><th>Remarks</th>
+</tr>
+</thead>
+<tbody id="historyTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<div id="leaveModal" class="modal-backdrop" onclick="closeLeaveModal(event)">
+<div class="modal-card" onclick="event.stopPropagation()">
+<h2>Leave Details</h2>
+<div class="modal-row">
+  <p><strong>Faculty:</strong> <span id="modalFaculty"></span></p>
+  <p><strong>Course:</strong> <span id="modalCourse"></span></p>
+  <p><strong>Leave Type:</strong> <span id="modalType"></span></p>
+  <p><strong>Start Date:</strong> <span id="modalStart"></span></p>
+  <p><strong>End Date:</strong> <span id="modalEnd"></span></p>
+</div>
+<p><strong>Reason:</strong></p>
+<p id="modalReason"></p>
+<p><strong>Uploaded Document:</strong></p>
+<p id="modalDoc"></p>
+
+<label for="modalRemarks"><strong>Remarks</strong></label>
+<textarea id="modalRemarks" placeholder="Enter remarks for Faculty"></textarea>
+
+<div class="modal-actions">
+<button class="approve-btn" onclick="approveLeave()">Approve</button>
+<button class="reject-btn" onclick="rejectLeave()">Reject</button>
+<button class="close-btn" onclick="closeLeaveModal()">Close</button>
+</div>
+</div>
+</div>
+
+<script>
+
+const API_BASE = 'http://localhost:8080/api';
+let allLeaves = [];
+let selectedLeaveId = null;
+let dashboardStatusFilter = 'ALL';
+let dashboardFacultyFilter = '';
+let dashboardDateFilter = '';
+let historyFacultyFilter = '';
+let historyStatusFilter = 'ALL';
+let historyDateFilter = '';
+
+function getToken(){
+  return localStorage.getItem('token');
+}
+
+function getAuthHeaders(){
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function handleAuthError(){
+  alert('Session expired or unauthorized. Redirecting to login.');
+  logout();
+}
+
+function logout(){
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('role');
+  localStorage.removeItem('username');
+  window.location.href = 'index.html';
+}
+
+const usernameDisplay = document.getElementById('username');
+if (usernameDisplay) {
+  usernameDisplay.innerText = localStorage.getItem('username') || 'Department Head';
+}
+
+function showSection(id,el){
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('banner').style.display = (id === 'dashboard') ? 'block' : 'none';
+  if (id === 'history') renderHistory();
+  if (id === 'requests') renderRequests();
+}
+
+function applyFilter(filter){
+  dashboardStatusFilter = filter;
+  document.getElementById('statusFilter').value = filter;
+  showSection('requests', document.getElementById('nav-requests'));
+}
+
+function setFacultyFilter(value){
+  dashboardFacultyFilter = value;
+  renderRequests();
+}
+
+function setStatusFilter(value){
+  dashboardStatusFilter = value;
+  renderRequests();
+}
+
+function setDateFilter(value){
+  dashboardDateFilter = value;
+  renderRequests();
+}
+
+function setHistoryFaculty(value){
+  historyFacultyFilter = value;
+  renderHistory();
+}
+
+function setHistoryStatus(value){
+  historyStatusFilter = value;
+  renderHistory();
+}
+
+function setHistoryDate(value){
+  historyDateFilter = value;
+  renderHistory();
+}
+
+function getDisplayValue(leave, key, fallback = '-'){
+  return leave[key] || leave[key.toLowerCase()] || fallback;
+}
+
+function statusBadge(status){
+  const key = (status || '').toLowerCase();
+  if (key === 'approved') return '<span class="status-badge approved">Approved</span>';
+  if (key === 'rejected') return '<span class="status-badge rejected">Rejected</span>';
+  if (key === 'pending') return '<span class="status-badge pending">Pending</span>';
+  return `<span class="status-badge">${status || 'Unknown'}</span>`;
+}
+
+function urgentBadge(isUrgent){
+  return isUrgent ? '<span class="status-badge urgent">Urgent</span>' : '-';
+}
+
+async function loadDashboard(){
+  const token = getToken();
+  if (!token) return handleAuthError();
+
+  const role = localStorage.getItem('role');
+  if (role !== 'DEPARTMENT_HEAD') {
+    alert('Unauthorized role. Redirecting to login.');
+    return logout();
+  }
+
+  document.getElementById('reqTable').innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
+  document.getElementById('historyTable').innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
+
+  try {
+    const response = await fetch(`${API_BASE}/leaves/all`, {
+      headers: getAuthHeaders()
+    });
+    if (response.status === 401 || response.status === 403) return handleAuthError();
+    if (!response.ok) throw new Error(await response.text() || 'Unable to load leaves.');
+    allLeaves = await response.json();
+    await populateFacultyFilters();
+    updateCards();
+    renderRequests();
+    renderHistory();
+    if (allLeaves.some(l => l.urgent === true)) {
+      const urgentNotice = document.getElementById('urgentNotice');
+      if (urgentNotice) urgentNotice.textContent = 'Urgent leave requests available';
+    }
+  } catch (err) {
+    alert('Unable to load leave data: ' + err.message);
+  }
+}
+
+async function populateFacultyFilters(){
+  const selectIds = ['facultyFilter', 'historyFacultyFilter'];
+  try {
+    const response = await fetch(`${API_BASE}/users`, {
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) return;
+    const users = await response.json();
+    const facultyMembers = Array.isArray(users) ? users : [];
+    selectIds.forEach(id => {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">All Faculty</option>' + facultyMembers.map(user => {
+        const label = user.name || user.fullName || user.username || 'Unknown';
+        return `<option value="${user.id}">${label}</option>`;
+      }).join('');
+      select.value = currentValue || '';
+    });
+  } catch (err) {
+    console.warn('Faculty list unavailable:', err.message);
+  }
+}
+
+function updateCards(){
+  const total = allLeaves.length;
+  const pending = allLeaves.filter(l => (l.status || '').toUpperCase() === 'PENDING').length;
+  const approved = allLeaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED').length;
+  const rejected = allLeaves.filter(l => (l.status || '').toUpperCase() === 'REJECTED').length;
+  const urgent = allLeaves.filter(l => l.urgent === true).length;
+  document.getElementById('totalCount').innerText = total;
+  document.getElementById('pendingCount').innerText = pending;
+  document.getElementById('approvedCount').innerText = approved;
+  document.getElementById('rejectedCount').innerText = rejected;
+  document.getElementById('urgentCount').innerText = urgent;
+}
+
+function filterLeaves(list, options = {}){
+  return list.filter(leave => {
+    const status = (leave.status || '').toUpperCase();
+    if (options.statusFilter && options.statusFilter !== 'ALL') {
+      if (options.statusFilter === 'URGENT') {
+        if (!leave.urgent) return false;
+      } else if (status !== options.statusFilter) return false;
+    }
+    if (options.facultyFilter) {
+      const facultyId = leave.applicant?.id || leave.facultyId || leave.userId || leave.faculty?.id;
+      if (facultyId && facultyId.toString() !== options.facultyFilter.toString()) return false;
+      if (!facultyId) {
+        const facultyName = leave.applicant?.name || leave.faculty || leave.name || '';
+        if (facultyName.toString() !== options.facultyFilter.toString()) return false;
+      }
+    }
+    if (options.dateFilter) {
+      const start = leave.startDate || leave.fromDate || '';
+      if (start !== options.dateFilter) return false;
+    }
+    return true;
+  });
+}
+
+function renderRequests(){
+  const filtered = filterLeaves(allLeaves, {
+    statusFilter: dashboardStatusFilter,
+    facultyFilter: dashboardFacultyFilter,
+    dateFilter: dashboardDateFilter
+  });
+  if (!filtered.length) {
+    document.getElementById('reqTable').innerHTML = '<tr><td colspan="8">No leave requests found.</td></tr>';
+    return;
+  }
+  document.getElementById('reqTable').innerHTML = filtered.map(leave => {
+    const isUrgent = leave.urgent === true;
+    return `<tr class="${isUrgent ? 'urgent-row' : ''}">
+      <td>${leave.applicantName || '-'}</td>
+      <td>${leave.course || '-'}</td>
+      <td>${leave.leaveType || '-'}</td>
+      <td>${leave.fromDate || '-'}</td>
+      <td>${leave.toDate || '-'}</td>
+      <td>${statusBadge(leave.status)}</td>
+      <td>${urgentBadge(isUrgent)}</td>
+      <td>${(leave.status || '').toUpperCase() === 'PENDING' ? `<button class="action-btn view-btn" onclick="openLeaveModal('${leave.id}')">View</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderHistory(){
+  const filtered = filterLeaves(allLeaves, {
+    statusFilter: historyStatusFilter,
+    facultyFilter: historyFacultyFilter,
+    dateFilter: historyDateFilter
+  });
+  if (!filtered.length) {
+    document.getElementById('historyTable').innerHTML = '<tr><td colspan="7">No history records found.</td></tr>';
+    return;
+  }
+  document.getElementById('historyTable').innerHTML = filtered.map(leave => {
+    const rowId = leave.id ? `leave-${leave.id}` : '';
+    const highlight = selectedLeaveId && leave.id && leave.id.toString() === selectedLeaveId.toString() ? 'urgent-row' : '';
+    return `<tr id="${rowId}" class="${highlight}">
+      <td>${leave.applicant?.name || '-'}</td>
+      <td>${leave.course || '-'}</td>
+      <td>${leave.leaveType || '-'}</td>
+      <td>${leave.fromDate || '-'}</td>
+      <td>${leave.toDate || '-'}</td>
+      <td>${statusBadge(leave.status)}</td>
+      <td>${leave.remarks || leave.remark || '-'}</td>
+    </tr>`;
+  }).join('');
+  if (selectedLeaveId) {
+    const row = document.getElementById(`leave-${selectedLeaveId}`);
+    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function openLeaveModal(id){
+  const leave = allLeaves.find(l => l.id && l.id.toString() === id.toString());
+  if (!leave) {
+    alert('Leave data not found.');
+    return;
+  }
+  selectedLeaveId = leave.id;
+  document.getElementById('modalFaculty').innerText = leave.applicant?.name || '-';
+  document.getElementById('modalCourse').innerText = leave.course || '-';
+  document.getElementById('modalType').innerText = leave.leaveType || '-';
+  document.getElementById('modalStart').innerText = leave.fromDate || '-';
+  document.getElementById('modalEnd').innerText = leave.toDate || '-';
+  document.getElementById('modalReason').innerText = leave.reason || '-';
+  const docContainer = document.getElementById('modalDoc');
+  const documentUrl = leave.documentUrl || leave.document || leave.fileUrl || leave.file;
+  if (documentUrl) {
+    docContainer.innerHTML = `<a href="${documentUrl}" target="_blank" class="view-link">View PDF</a> | <a href="${documentUrl}" download class="download-link">Download PDF</a>`;
+  } else {
+    docContainer.innerText = 'No document provided.';
+  }
+  document.getElementById('modalRemarks').value = leave.remarks || leave.remark || '';
+  document.getElementById('leaveModal').classList.add('open');
+}
+
+function closeLeaveModal(event){
+  if (event && event.target && event.target.id !== 'leaveModal') return;
+  document.getElementById('leaveModal').classList.remove('open');
+}
+
+async function approveLeave(){
+  await processLeaveAction('approve');
+}
+
+async function rejectLeave(){
+  await processLeaveAction('reject');
+}
+
+async function processLeaveAction(action){
+  const leave = allLeaves.find(l => l.id && l.id.toString() === selectedLeaveId?.toString());
+  if (!leave) {
+    alert('Please select a leave request first.');
+    return;
+  }
+  const remarks = document.getElementById('modalRemarks').value.trim();
+  const url = `${API_BASE}/leaves/${action}/${leave.id}`;
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ remarks })
+    });
+    if (response.status === 401 || response.status === 403) return handleAuthError();
+    if (!response.ok) throw new Error(await response.text() || `Could not ${action} leave.`);
+    alert(`Leave ${action === 'approve' ? 'approved' : 'rejected'} successfully.`);
+    closeLeaveModal();
+    await loadDashboard();
+  } catch (err) {
+    alert(`Unable to ${action} leave: ${err.message}`);
+  }
+}
+
+async function loadNotifications(){
+  await loadDashboard();
+}
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

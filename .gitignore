@@ -1,0 +1,17 @@
+# Backend
+Backend/leaveplatform/target/
+Backend/leaveplatform/*.log
+Backend/leaveplatform/*.class
+Backend/leaveplatform/*.jar
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+
+# Secrets
+Backend/leaveplatform/src/main/resources/application.properties
+.env

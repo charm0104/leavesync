@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+body{
+background:#f4f7fb;
+}
+.header{
+background:linear-gradient(90deg,#3f6fa0,#1e40af);
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+color:white;
+}
+.brand,
+.header-right{
+display:flex;
+align-items:center;
+gap:16px;
+}
+.brand img{width:55px;height:55px;background:white;border-radius:10px;padding:5px;object-fit:cover;}
+.brand-text h2{
+font-size:18px;
+margin-bottom:4px;
+}
+.brand-text p{
+font-size:13px;
+opacity:.85;
+margin:0;
+}
+.sidebar{display:flex;gap:12px;list-style:none;}
+.sidebar li{
+padding:12px 20px;
+border-radius:999px;
+background:rgba(255,255,255,.2);
+cursor:pointer;
+font-size:14px;
+font-weight:600;
+transition:all .2s ease;
+}
+.sidebar li:hover{
+background:rgba(255,255,255,0.3);
+}
+.sidebar li.active{
+background:white;
+color:#1e40af;
+font-weight:600;
+}
+.header-right{
+gap:14px;
+}
+.apply-btn{
+background:rgba(255,255,255,0.18);
+color:white;
+padding:10px 18px;
+border:none;
+border-radius:999px;
+cursor:pointer;
+font-weight:600;
+transition:all .2s ease;
+}
+.apply-btn:hover{
+background:white;
+color:#1e40af;
+}
+.user-menu{
+position:relative;
+cursor:pointer;
+}
+.dropdown{
+display:none;
+position:absolute;
+right:0;
+top:48px;
+background:white;
+border-radius:10px;
+box-shadow:0 8px 30px rgba(15,23,42,0.15);
+}
+.logout-btn{
+background:#e63946;
+color:white;
+border:none;
+padding:10px 20px;
+cursor:pointer;
+}
+.banner{width:100%;height:350px;}
+.banner img{width:100%;height:100%;object-fit:cover;}
+.section, .card {
+    margin-top: 20px;
+}
+.container{max-width:1400px;margin:auto;padding:30px;}
+.main{
+padding:0;
+overflow:visible;
+}
+.main header{
+margin-bottom:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:16px;
+}
+.main header h1{
+font-size:28px;
+color:#102a43;
+}
+.main header .subtle{
+color:#475569;
+}
+@media(max-width:980px){
+.header{
+flex-direction:column;
+align-items:flex-start;
+gap:16px;
+}
+.sidebar{
+margin:0;
+}
+.header-right{
+width:100%;
+justify-content:flex-start;
+flex-wrap:wrap;
+}
+.banner{
+height:300px;
+}
+}
+@media(max-width:700px){
+.header{
+padding:16px;
+}
+.sidebar li{
+flex:1 1 100%;
+text-align:center;
+}
+}
+
+.card{background:white;padding:30px;border-radius:14px;margin-bottom:25px;}
+.card-grid{
+display:grid;
+grid-template-columns:repeat(3,minmax(180px,1fr));
+gap:18px;
+margin-bottom:25px;
+}
+.metric-title{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+}
+.alert-card{
+display:flex;
+align-items:flex-start;
+gap:15px;
+padding:18px;
+border-radius:14px;
+background:#fef3c7;
+border:1px solid #fde68a;
+margin-bottom:20px;
+}
+.alert-card i{
+font-size:22px;
+color:#b45309;
+margin-top:4px;
+}
+.alert-card p{
+color:#92400e;
+line-height:1.5;
+}
+.table-panel{
+overflow-x:auto;
+}
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+min-width:720px;
+}
+th,td{
+padding:14px 12px;
+border-bottom:1px solid #e2e8f0;
+text-align:left;
+}
+th{
+background:#f8fafc;
+color:#334155;
+font-weight:600;
+}
+tr:hover td{
+background:#f8fafc;
+}
+.badge{
+display:inline-flex;
+padding:6px 10px;
+border-radius:999px;
+font-size:12px;
+font-weight:600;
+}
+.badge.approved{
+background:#ecfdf5;
+color:#166534;
+}
+.badge.pending{
+background:#fef3c7;
+color:#92400e;
+}
+.badge.urgent{
+background-color:#ef4444;
+color:white;
+margin-left:5px;
+}
+.badge.completed{
+background:#dbeafe;
+color:#1d4ed8;
+}
+.reset-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.reset-btn:hover {
+    background-color: #1d4ed8;
+}
+.nav-pill {
+    position: relative;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+}
+.urgent-pill {
+    position: relative;
+}
+.urgent-dot {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+    display: none;
+}
+select,input{
+padding:12px;
+border-radius:6px;
+margin-right:10px;
+margin-bottom:15px;
+}
+button{
+background:#1e40af;
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+font-weight:600;
+transition:transform .15s ease,box-shadow .15s ease;
+}
+button:hover{
+transform:translateY(-1px);
+box-shadow:0 8px 20px rgba(30,64,175,0.18);
+}
+.button-secondary{
+background:#475569;
+}
+.assign-btn{
+background:#22c55e;
+}
+.cancel-btn{
+background:#ef4444;
+} 
+.urgent-container {
+    border: 2px solid #ef4444;
+    background-color: #fee2e2;
+}
+.urgent-container h2 {
+    color: #b91c1c;
+}
+.urgent-nav {
+    position: relative;
+}
+.urgent-dot {
+    position: absolute;
+    top: 6px;
+    right: -6px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: none;
+    box-shadow: 0 0 0 2px white;
+}
+.section-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:12px;
+}
+.section-header h3{
+font-size:20px;
+color:#0f172a;
+}
+.filters{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+gap:16px;
+margin-top:12px;
+}
+.notification-filters{
+display:flex;
+gap:18px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+.notification-filters .filter-item{
+flex:1 1 220px;
+min-width:200px;
+}
+.notification-filters label{
+display:block;
+margin-bottom:8px;
+font-size:14px;
+color:#475569;
+}
+.notification-filters input,
+.notification-filters select{
+width:100%;
+}
+.chart-row{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:18px;
+margin-top:20px;
+}
+.chart-card{
+padding:18px;
+border-radius:14px;
+background:#f8fafc;
+}
+@media(max-width:1100px){
+.card-grid, .chart-row{grid-template-columns:1fr;}
+}
+@media(max-width:760px){
+.container{flex-direction:column;}
+.sidebar{width:100%;border-right:none;border-bottom:1px solid #ddd;}
+.main{height:auto;}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="brand">
+<img src="jims logo.jpg" alt="JIMS Rohini logo">
+<div class="brand-text">
+<h2>JIMS Rohini</h2>
+<p>Admin Portal</p>
+</div>
+</div>
+<ul class="sidebar">
+<li class="active" onclick="showSection('dashboard', this)">Dashboard</li>
+<li onclick="showSection('notifications', this)">Notifications</li>
+<li class="nav-item urgent-nav">
+  <button class="nav-pill urgent-pill" type="button" onclick="showSection('urgentLeaves', this)">
+    Urgent Leaves
+    <span id="urgentDot" class="urgent-dot"></span>
+  </button>
+</li>
+<li onclick="showSection('classAdjustment', this)">Class Adjustment</li>
+<li onclick="showSection('reports', this)">Leave Reports</li>
+</ul>
+<div class="header-right">
+<div class="user-menu" onclick="toggleMenu()">
+<i class="fa fa-user-circle"></i> Admin
+<div class="dropdown" id="dropdown">
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
+</div>
+<div id="headerImage" class="banner">
+  <img src="jims1.jpg" alt="JIMS Rohini">
+</div>
+<div class="container">
+<div class="main">
+<div id="dashboard" class="section">
+</div>
+<div id="notifications" class="section card" style="display:none;">
+<div class="section-header">
+<h3>Notifications</h3>
+</div>
+<div class="filters">
+<div>
+<label>Course Filter</label>
+<select id="courseFilter" onchange="filterTable()">
+<option value="">Select Course</option>
+<option value="MCA">MCA</option>
+<option value="BCA">BCA</option>
+<option value="BBA">BBA</option>
+<option value="BCOM">BCOM</option>
+<option value="PGDM">PGDM</option>
+</select>
+</div>
+<div>
+<label>Date Filter</label>
+<input type="date" id="dateFilter" onchange="filterTable()">
+</div>
+<div>
+<label>Time Slot</label>
+<select id="timeSlotFilter" onchange="filterTable()">
+<option value="">Select Slot</option>
+<option value="8:30 - 9:25">8:30 - 9:25</option>
+<option value="9:30 - 10:25">9:30 - 10:25</option>
+<option value="10:55 - 11:50">10:55 - 11:50</option>
+<option value="11:55 - 12:50">11:55 - 12:50</option>
+<option value="1:05 - 2:00">1:05 - 2:00</option>
+<option value="2:05 - 3:00">2:05 - 3:00</option>
+<option value="3:15 - 4:10">3:15 - 4:10</option>
+</select>
+</div>
+<div style="display:flex; align-items:flex-end;">
+<button class="reset-btn" onclick="resetFilters()">Reset</button>
+</div>
+</div>
+<div class="table-panel">
+<table id="notificationsTable">
+<thead>
+<tr>
+<th>Faculty</th>
+<th>Course</th>
+<th>Start Date</th>
+<th>End Date</th>
+<th>Time Slot</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="notifTable"></tbody>
+</table>
+</div>
+</div>
+<div id="urgentLeaves" class="section" style="display:none;">
+  <div class="card urgent-container">
+    <h2>🚨 Urgent Leave Management</h2>
+    <div class="table-panel">
+      <table>
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Course</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Time Slot</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="urgentTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div id="classAdjustment" class="section" style="display:none;">
+<div class="card">
+<h2>Class Adjustment</h2>
+<div class="filters">
+<div>
+<label>Course</label>
+<select id="adjCourse" onchange="updateValues()">
+<option value="">Select Course</option>
+<option>MCA</option>
+<option>BCA</option>
+<option>BBA</option>
+<option>BCOM</option>
+<option>PGDM</option>
+</select>
+</div>
+<div>
+<label>Date</label>
+<input type="date" id="adjDate">
+</div>
+<div>
+<label>Start Time</label>
+<select id="startTime" onchange="updateValues()">
+<option value="">Start Time</option>
+<option>8:00 AM</option>
+<option>9:00 AM</option>
+<option>10:00 AM</option>
+<option>11:00 AM</option>
+<option>12:00 PM</option>
+<option>1:00 PM</option>
+<option>2:00 PM</option>
+<option>3:00 PM</option>
+<option>4:00 PM</option>
+</select>
+</div>
+<div>
+<label>End Time</label>
+<select id="endTime" onchange="updateValues()">
+<option value="">End Time</option>
+<option>9:00 AM</option>
+<option>10:00 AM</option>
+<option>11:00 AM</option>
+<option>12:00 PM</option>
+<option>1:00 PM</option>
+<option>2:00 PM</option>
+<option>3:00 PM</option>
+<option>4:00 PM</option>
+<option>5:00 PM</option>
+</select>
+</div>
+</div>
+<div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+<button class="button-secondary" onclick="resetAdjustmentFilters()">Refresh</button>
+</div>
+<div class="table-panel">
+<table>
+<thead>
+<tr>
+<th>Faculty on Leave</th>
+<th>Date</th>
+<th>Time Slot</th>
+<th>Course</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="classAdjustmentTable"></tbody>
+</table>
+</div>
+<div id="availableFacultySection" class="table-panel" style="display:none; margin-top:20px;">
+<div class="section-header">
+<h4 style="font-size:18px; margin:0;">Available Faculty</h4>
+</div>
+<table>
+<thead>
+<tr>
+<th>Available Faculty Name</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="facultyList"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="faculty" class="section card" style="display:none;">
+<div class="section-header">
+<h3>Faculty Management</h3>
+<button class="button-secondary" onclick="renderFaculty()">Refresh Faculty</button>
+</div>
+<div class="filters">
+<div>
+<label>Faculty Name</label>
+<input type="text" id="facultyName" placeholder="Add faculty name">
+</div>
+<div>
+<label>Email</label>
+<input type="email" id="facultyEmail" placeholder="Add faculty email">
+</div>
+<div>
+<label>Availability</label>
+<select id="facultyAvailability">
+<option value="Available">Available</option>
+<option value="Busy">Busy</option>
+</select>
+</div>
+</div>
+<button onclick="addFaculty()">Add Faculty Member</button>
+<div class="table-panel">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Availability</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="facultyTable"></tbody>
+</table>
+</div>
+</div>
+<div id="history" class="section card" style="display:none;">
+<div class="section-header">
+<h3>Adjustment History</h3>
+<button class="button-secondary" onclick="renderHistory()">Refresh History</button>
+</div>
+<div class="filters">
+<div>
+<label>Adjustment Type</label>
+<select id="historyFilter" onchange="renderHistory()">
+<option value="all">All Types</option>
+<option value="Leave">Leave</option>
+<option value="Schedule">Schedule</option>
+<option value="Availability">Availability</option>
+</select>
+</div>
+</div>
+<div class="table-panel">
+<table>
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Action</th>
+<th>User</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody id="historyTable"></tbody>
+</table>
+</div>
+</div>
+<div id="reports" class="section card" style="display:none;">
+<div class="section-header">
+<h3>Leave Reports</h3>
+</div>
+<div class="filters">
+<div>
+<label>Course</label>
+<select id="reportCourse">
+<option value="">Select Course</option>
+<option value="MCA">MCA</option>
+<option value="BCA">BCA</option>
+<option value="BCOM">BCOM</option>
+<option value="BBA">BBA</option>
+<option value="PGDM">PGDM</option>
+</select>
+</div>
+<div>
+<label>Date</label>
+<input type="date" id="reportDate">
+</div>
+</div>
+<div class="table-panel">
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Faculty on Leave</th>
+<th>Substitute Faculty</th>
+<th>Time Slot</th>
+</tr>
+</thead>
+<tbody id="leaveReportsTable"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<script>
+if(localStorage.getItem('role') !== 'ADMIN'){
+window.location.href='index.html';
+}
+const API_BASE = 'http://localhost:8080/api';
+function getAuthHeaders(){
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: 'Bearer ' + token } : {};
+}
+function toggleMenu(){
+const dropdown=document.getElementById('dropdown');
+dropdown.style.display=dropdown.style.display==='block'?'none':'block';
+}
+function logout(){
+localStorage.clear();
+window.location.href='index.html';
+}
+function showSection(id, el){
+    if (el && el.tagName === 'BUTTON' && el.parentElement) {
+        el = el.parentElement;
+    }
+    document.querySelectorAll('.section').forEach(section=>section.style.display='none');
+    document.getElementById(id).style.display='block';
+    document.querySelectorAll('.sidebar li').forEach(li=>li.classList.remove('active'));
+    if (el) {
+        el.classList.add('active');
+    }
+    let header = document.getElementById('headerImage');
+    if (header) {
+        header.style.display = id === 'dashboard' ? 'block' : 'none';
+    }
+    if (id === 'urgentLeaves') {
+        loadUrgentSection();
+    }
+    if (id === 'classAdjustment') {
+        loadClassAdjustment();
+    }
+}
+function getStorage(key, fallback){
+return JSON.parse(localStorage.getItem(key)) || fallback;
+}
+function saveStorage(key, value){
+localStorage.setItem(key, JSON.stringify(value));
+}
+function formatTimestamp(date){
+return new Date(date).toLocaleString([], {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+function addHistory(action, user, details){
+const history=getStorage('adjustments', []);
+history.unshift({time:Date.now(), action, user, details});
+saveStorage('adjustments', history);
+}
+function initDefaults(){
+if(!localStorage.getItem('leaves')){
+const sampleLeaves=[
+{faculty:'Dr. Sonia Mehra', course:'MCA', timeSlot:'8:30 - 9:25', status:'Approved', urgent:false, start:'2026-04-20', end:'2026-04-22'},
+{faculty:'Mr. Arjun Patel', course:'BCA', timeSlot:'9:30 - 10:25', status:'Pending', urgent:true, start:'2026-04-18', end:'2026-04-18'},
+{faculty:'Ms. Kavita Sharma', course:'BBA', timeSlot:'10:55 - 11:50', status:'Approved', urgent:false, start:'2026-04-21', end:'2026-04-22'},
+{faculty:'Prof. Neha Verma', course:'BCOM', timeSlot:'11:55 - 12:50', status:'Pending', urgent:true, start:'2026-04-23', end:'2026-04-24'},
+{faculty:'Dr. Rohan Singh', course:'PGDM', timeSlot:'1:05 - 2:00', status:'Approved', urgent:false, start:'2026-04-25', end:'2026-04-25'},
+];
+saveStorage('leaves', sampleLeaves);
+}
+if(!localStorage.getItem('faculty')){
+saveStorage('faculty', [
+{name:'Ms. Asha', email:'asha@example.com', availability:'Busy'},
+{name:'Mr. Raj', email:'raj@example.com', availability:'Available'},
+{name:'Ms. Nina', email:'nina@example.com', availability:'Available'},
+]);
+}
+if(!localStorage.getItem('adjustments')){
+saveStorage('adjustments', [
+{time:Date.now()-86400000, action:'Leave Approved', user:'Admin', details:'Ms. Asha approved for MCA leave.'},
+{time:Date.now()-43200000, action:'Faculty Added', user:'Admin', details:'Mr. Aman added to faculty list.'},
+]);
+}
+}
+function updateSummary(){
+const leaves=getStorage('leaves', []);
+const faculty=getStorage('faculty', []);
+const approved=leaves.filter(item=>item.status==='Approved').length;
+const pending=leaves.filter(item=>item.status==='Pending').length;
+const available=faculty.filter(member=>member.availability==='Available').length;
+document.getElementById('totalApproved').textContent=approved;
+document.getElementById('totalPending').textContent=pending;
+document.getElementById('availableCount').textContent=available;
+}
+function filterApprovedAndUrgent() {
+    let rows = document.querySelectorAll('#notificationsTable tbody tr');
+    rows.forEach(row => {
+        let status = row.getAttribute('data-status');
+        let urgent = row.getAttribute('data-urgent') === 'true';
+        let statusCell = row.querySelector('.status-cell');
+
+        if (status === 'approved') {
+            row.style.display = '';
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="badge approved">Approved</span>';
+                if (urgent && !statusCell.innerHTML.includes('URGENT')) {
+                    statusCell.innerHTML += ' <span class="badge urgent">URGENT</span>';
+                }
+            }
+        } else {
+            row.style.display = 'none';
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="badge pending">Pending</span>';
+            }
+        }
+    });
+    updateUrgentDot();
+}
+function filterTable(){
+    let course = document.getElementById('courseFilter').value;
+    let date = document.getElementById('dateFilter').value;
+    let slot = document.getElementById('timeSlotFilter').value;
+    let rows = document.querySelectorAll('#notificationsTable tbody tr');
+    rows.forEach(row => {
+        let status = row.getAttribute('data-status');
+        let urgent = row.getAttribute('data-urgent') === 'true';
+        let rowCourse = row.getAttribute('data-course');
+        let rowDate = row.getAttribute('data-date');
+        let rowSlot = row.getAttribute('data-slot');
+        let statusCell = row.querySelector('.status-cell');
+        let show = status === 'approved';
+
+        if (show) {
+            if (course && rowCourse !== course) show = false;
+            if (date && rowDate !== date) show = false;
+            if (slot && rowSlot !== slot) show = false;
+        }
+
+        row.style.display = show ? '' : 'none';
+
+        if (statusCell) {
+            if (status === 'approved') {
+                statusCell.innerHTML = '<span class="badge approved">Approved</span>';
+                if (urgent && !statusCell.innerHTML.includes('URGENT')) {
+                    statusCell.innerHTML += ' <span class="badge urgent">URGENT</span>';
+                }
+            } else {
+                statusCell.innerHTML = '<span class="badge pending">Pending</span>';
+            }
+        }
+    });
+    updateUrgentDot();
+}
+function resetFilters(){
+    document.getElementById('courseFilter').value = '';
+    document.getElementById('dateFilter').value = '';
+    document.getElementById('timeSlotFilter').value = '';
+
+    filterApprovedAndUrgent();
+    filterTable();
+}
+function loadUrgentSection(){
+    let allRows = document.querySelectorAll('#notificationsTable tbody tr');
+    let urgentTable = document.getElementById('urgentTable');
+    if (!urgentTable) return;
+    urgentTable.innerHTML = '';
+    allRows.forEach(row => {
+        let status = row.getAttribute('data-status');
+        let urgent = row.getAttribute('data-urgent') === 'true';
+        if (status === 'approved' && urgent) {
+            let clone = row.cloneNode(true);
+            urgentTable.appendChild(clone);
+        }
+    });
+}
+function updateStatusBadges(){
+let rows = document.querySelectorAll('#notifications tbody tr');
+rows.forEach(row => {
+let status = row.getAttribute('data-status');
+let urgent = row.getAttribute('data-urgent') === 'true';
+let cell = row.querySelector('.status-cell');
+if (!cell) return;
+if (status === 'approved') {
+cell.innerHTML = `<span class="badge approved">Approved</span>${urgent ? ' <span class="badge urgent">URGENT</span>' : ''}`;
+} else if (status === 'pending') {
+if (urgent) {
+cell.innerHTML = `
+<span class="badge pending">Pending</span>
+<span class="badge urgent">URGENT</span>`;
+} else {
+cell.innerHTML = `<span class="badge pending">Pending</span>`;
+}
+}
+});
+updateUrgentBadge();
+}
+function updateUrgentDot() {
+    let rows = document.querySelectorAll('#notificationsTable tbody tr');
+    let hasUrgent = false;
+    rows.forEach(row => {
+        let status = row.getAttribute('data-status');
+        let urgent = row.getAttribute('data-urgent') === 'true';
+        if (status === 'approved' && urgent) {
+            hasUrgent = true;
+        }
+    });
+    let dot = document.getElementById('urgentDot');
+    if (!dot) return;
+    dot.style.display = hasUrgent ? 'block' : 'none';
+}
+function updateUrgentBadge(){
+    updateUrgentDot();
+}
+
+function showOnlyApproved() {
+let rows = document.querySelectorAll('#notifications tbody tr');
+rows.forEach(row => {
+let status = row.getAttribute('data-status');
+row.style.display = status === 'approved' ? '' : 'none';
+});
+}
+document.addEventListener('DOMContentLoaded', () => {
+    filterApprovedAndUrgent();
+    updateUrgentBadge();
+    loadNotifications();
+    loadUrgentLeaves();
+    loadReports();
+    const header = document.getElementById('headerImage');
+    if (header) {
+        header.style.display = 'block';
+    }
+});
+function showAvailableFaculty(){
+  document.getElementById('availableFacultySection').style.display = 'block';
+}
+function updateValues(){
+  let course = document.getElementById('adjCourse').value || '-';
+  let start = document.getElementById('startTime').value;
+  let end = document.getElementById('endTime').value;
+
+  let slot = (start && end) ? start + ' - ' + end : '-';
+
+  // Page currently manages selected leave values through loadClassAdjustment.
+  // These fields can be used for filter display or reconciliation if needed.
+}
+function resetAdjustmentFilters(){
+  document.getElementById('adjCourse').value = '';
+  document.getElementById('adjDate').value = '';
+  document.getElementById('startTime').value = '';
+  document.getElementById('endTime').value = '';
+  updateValues();
+}
+function handleAssign(btn){
+  let row = btn.parentElement;
+  let cancelBtn = row.querySelector('.cancel-btn');
+
+  btn.innerText = 'Assigned';
+  btn.disabled = true;
+  btn.style.backgroundColor = '#86efac';
+
+  if(cancelBtn) cancelBtn.remove();
+}
+function handleCancel(btn){
+  let row = btn.parentElement;
+  let assignBtn = row.querySelector('.assign-btn');
+
+  btn.innerText = 'Cancelled';
+  btn.disabled = true;
+  btn.style.backgroundColor = '#fca5a5';
+
+  if(assignBtn) assignBtn.remove();
+}
+function addFaculty(){
+const name=document.getElementById('facultyName').value.trim();
+const email=document.getElementById('facultyEmail').value.trim();
+const availability=document.getElementById('facultyAvailability').value;
+if(!name || !email){return alert('Please provide name and email for faculty.');}
+const faculty=getStorage('faculty', []);
+faculty.unshift({name, email, availability});
+saveStorage('faculty', faculty);
+addHistory('Faculty Added', 'Admin', `Added ${name} with availability ${availability}.`);
+document.getElementById('facultyName').value='';
+document.getElementById('facultyEmail').value='';
+document.getElementById('facultyAvailability').value='Available';
+renderFaculty();
+}
+function renderFaculty(){
+const faculty=getStorage('faculty', []);
+const body=document.getElementById('facultyTable');
+body.innerHTML='';
+faculty.forEach((member,index)=>{
+body.innerHTML += `
+<tr>
+<td>${member.name}</td>
+<td>${member.email}</td>
+<td><span class="badge ${member.availability==='Available' ? 'approved' : 'pending'}">${member.availability}</span></td>
+<td><button class="button-secondary" onclick="toggleAvailability(${index})">Toggle</button></td>
+</tr>`;
+});
+updateSummary();
+}
+
+async function loadNotifications(){
+  const res = await fetch(`${API_BASE}/admin/notifications`, {
+    headers: getAuthHeaders()
+  });
+
+  const data = await res.json();
+
+  renderNotifications(data);
+}
+
+function renderNotifications(data){
+  document.getElementById("notifTable").innerHTML =
+    data.map(l => `
+      <tr data-status="${(l.status||'').toLowerCase()}" data-urgent="${l.urgent===true}" data-course="${l.course||''}" data-date="${l.startDate||''}" data-slot="${l.timeslot||''}">
+        <td>${l.facultyName || '-'}</td>
+        <td>${l.course || '-'}</td>
+        <td>${l.startDate || '-'}</td>
+        <td>${l.endDate || '-'}</td>
+        <td>${l.timeslot || '-'}</td>
+        <td>${l.status || '-'}</td>
+        <td>
+          <button onclick='goToClassAdjustment(${JSON.stringify(l)})'>Assign</button>
+        </td>
+      </tr>
+    `).join('');
+  filterTable();
+}
+
+function goToClassAdjustment(leave){
+  localStorage.setItem("selectedLeave", JSON.stringify(leave));
+  showSection('classAdjustment');
+}
+
+async function loadUrgentLeaves(){
+  const res = await fetch(`${API_BASE}/admin/urgent`, {
+    headers: getAuthHeaders()
+  });
+  const data = await res.json();
+  renderUrgent(data);
+}
+
+function renderUrgent(data){
+  const list = Array.isArray(data) ? data : [];
+  const html = list.length ? list.map(l => `
+      <tr>
+        <td>${l.facultyName || '-'}</td>
+        <td>${l.course || '-'}</td>
+        <td>${l.startDate || '-'}</td>
+        <td>${l.endDate || '-'}</td>
+        <td>${l.timeslot || '-'}</td>
+        <td>${l.status || '-'}</td>
+        <td><button class="button-secondary" onclick='goToClassAdjustment(${JSON.stringify(l)})'>Assign</button></td>
+      </tr>
+    `).join('') : '<tr><td colspan="7">No records found</td></tr>';
+  document.getElementById('urgentTable').innerHTML = html;
+}
+
+function loadClassAdjustment(){
+  const leave = JSON.parse(localStorage.getItem('selectedLeave'));
+  const container = document.getElementById('classAdjustmentTable');
+  if(!leave || !container) return;
+  document.getElementById('availableFacultySection').style.display = 'none';
+  document.getElementById('adjCourse').value = leave.course || '';
+  document.getElementById('adjDate').value = leave.startDate || '';
+  container.innerHTML = `
+    <tr>
+      <td>${leave.facultyName || '-'}</td>
+      <td>${leave.startDate || '-'}</td>
+      <td>${leave.timeslot || '-'}</td>
+      <td>${leave.course || '-'}</td>
+      <td>
+        <button class="button-secondary" onclick="loadAvailableFaculty()">Available</button>
+      </td>
+    </tr>
+  `;
+}
+
+ async function loadAvailableFaculty(){
+  const leave = JSON.parse(localStorage.getItem('selectedLeave'));
+  if(!leave) return;
+  const res = await fetch(`${API_BASE}/admin/available-faculty?course=${encodeURIComponent(leave.course)}&date=${encodeURIComponent(leave.startDate)}&timeSlot=${encodeURIComponent(leave.timeslot)}`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+  const data = await res.json();
+  renderFacultyList(Array.isArray(data) ? data : []);
+  document.getElementById('availableFacultySection').style.display = 'block';
+}
+
+function renderFacultyList(list){
+  document.getElementById("facultyList").innerHTML =
+    list.map(f => `
+      <tr>
+        <td>${f.name || '-'}</td>
+        <td>
+          <button class="assign-btn" onclick="assignFaculty(${f.id || f._id})">Assign</button>
+        </td>
+      </tr>
+    `).join('');
+  if(!list || list.length === 0){
+    document.getElementById("facultyList").innerHTML = '<tr><td colspan="2">No available faculty found</td></tr>';
+  }
+}
+
+async function assignFaculty(facultyId){
+  const leave = JSON.parse(localStorage.getItem('selectedLeave'));
+  if(!leave) return alert('No leave selected');
+  await fetch(`${API_BASE}/admin/schedule`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    },
+    body: JSON.stringify({
+      leaveId: leave.id || leave._id || leave.leaveId,
+      facultyId: facultyId,
+      date: leave.startDate,
+      timeSlot: leave.timeslot
+    })
+  });
+  alert("Faculty assigned successfully");
+  cancelAssign();
+}
+
+function cancelAssign(){
+  localStorage.removeItem("selectedLeave");
+  document.getElementById('availableFacultySection').style.display = 'none';
+  document.getElementById('classAdjustmentTable').innerHTML = '';
+}
+
+async function loadReports(){
+  const res = await fetch(`${API_BASE}/admin/reports`, {
+    headers: getAuthHeaders()
+  });
+
+  const data = await res.json();
+  const list = Array.isArray(data) ? data : [];
+  const html = list.length ? list.map(r => `
+      <tr>
+        <td>${r.date || '-'}</td>
+        <td>${r.leave?.faculty?.name || r.leave?.facultyName || r.leave?.applicant?.name || '-'}</td>
+        <td>${r.substituteFaculty?.name || '-'}</td>
+        <td>${r.timeSlot || r.timeslot || '-'}</td>
+      </tr>
+    `).join('') : '<tr><td colspan="4">No records found</td></tr>';
+  document.getElementById('leaveReportsTable').innerHTML = html;
+}
+
+function toggleAvailability(index){
+const faculty=getStorage('faculty', []);
+if(faculty[index]){
+faculty[index].availability=faculty[index].availability==='Available' ? 'Busy' : 'Available';
+saveStorage('faculty', faculty);
+addHistory('Availability Updated', 'Admin', `${faculty[index].name} is now ${faculty[index].availability}.`);
+renderFaculty();
+}
+}
+function renderHistory(){
+const history=getStorage('adjustments', []);
+const filter=document.getElementById('historyFilter').value;
+const body=document.getElementById('historyTable');
+body.innerHTML='';
+const filtered=history.filter(item=> filter==='all' || item.action.includes(filter));
+filtered.forEach(item=>{
+body.innerHTML += `
+<tr>
+<td>${formatTimestamp(item.time)}</td>
+<td>${item.action}</td>
+<td>${item.user}</td>
+<td>${item.details}</td>
+</tr>`;
+});
+}
+let reportChart=null;
+let courseChart=null;
+function drawCharts(){
+const leaves=getStorage('leaves', []);
+const approved=leaves.filter(item=>item.status==='Approved').length;
+const pending=leaves.filter(item=>item.status==='Pending').length;
+const courseCounts=leaves.reduce((acc,item)=>{acc[item.course]=(acc[item.course]||0)+1;return acc;},{ });
+const courseLabels=Object.keys(courseCounts);
+const courseData=Object.values(courseCounts);
+const ctx=document.getElementById('reportChart').getContext('2d');
+const ctxCourse=document.getElementById('courseChart').getContext('2d');
+if(reportChart) reportChart.destroy();
+if(courseChart) courseChart.destroy();
+reportChart=new Chart(ctx, {
+type:'doughnut',
+data:{labels:['Approved','Pending'],datasets:[{data:[approved,pending],backgroundColor:['#22c55e','#facc15']}]} 
+});
+courseChart=new Chart(ctxCourse, {
+type:'bar',
+data:{labels:courseLabels,datasets:[{label:'Requests',data:courseData,backgroundColor:'#2563eb'}]},
+options:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}
+});
+}
+window.addEventListener('click', function(event){
+const menu=document.getElementById('dropdown');
+if(!event.target.closest('.user-menu')) menu.style.display='none';
+});
+initDefaults();
+filterApprovedAndUrgent();
+renderFaculty();
+renderHistory();
+drawCharts();
+updateSummary();
+</script>
+</body>
+</html>
