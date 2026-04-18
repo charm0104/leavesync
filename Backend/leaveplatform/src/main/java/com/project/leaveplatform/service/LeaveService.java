@@ -9,6 +9,8 @@ import com.project.leaveplatform.entity.Stakeholder;
 import com.project.leaveplatform.repo.LeaveRepository;
 import com.project.leaveplatform.enums.LeaveStatus;
 import com.project.leaveplatform.repo.StakeholderRepository;
+import com.project.leaveplatform.entity.Notification;
+import com.project.leaveplatform.repo.NotificationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,8 +20,10 @@ import java.util.List;
 public class LeaveService {
     private final LeaveRepository leaveRepo;
     private final StakeholderRepository stakeholderRepo;
+    private final NotificationRepository notificationRepo;
 
-    public LeaveService(LeaveRepository leaveRepo, StakeholderRepository stakeholderRepo) {
+    public LeaveService(LeaveRepository leaveRepo, StakeholderRepository stakeholderRepo, NotificationRepository notificationRepo) {
+    this.notificationRepo = notificationRepo;
     this.leaveRepo = leaveRepo;
     this.stakeholderRepo = stakeholderRepo;
 }
@@ -90,6 +94,15 @@ public LeaveApplication applyLeave(LeaveApplication leave){
 
     LeaveApplication updated = leaveRepo.save(leave);
 
+    Notification notification = new Notification();
+    notification.setFacultyId(leave.getFaculty().getId()); // IMPORTANT
+    notification.setLeaveId(leave.getId());
+    notification.setStatus("APPROVED");
+    notification.setRemarks(remarks);
+    notification.setMessage("Your leave has been approved");
+
+    notificationRepo.save(notification);
+
     System.out.println("Approved leave notified to faculty & coordinator");
 
     return updated;
@@ -99,7 +112,19 @@ public LeaveApplication applyLeave(LeaveApplication leave){
         LeaveApplication leave = leaveRepo.findById(id).orElseThrow();
         leave.setStatus(LeaveStatus.REJECTED);
         leave.setRemarks(remarks);
-        return leaveRepo.save(leave);
+        LeaveApplication updated = leaveRepo.save(leave);
+
+    // ✅ CREATE NOTIFICATION
+    Notification notification = new Notification();
+    notification.setFacultyId(leave.getFaculty().getId());
+    notification.setLeaveId(leave.getId());
+    notification.setStatus("REJECTED");
+    notification.setRemarks(remarks);
+    notification.setMessage("Your leave has been rejected");
+
+    notificationRepo.save(notification);
+
+    return updated;
     }
 
     public List<LeaveApplicationResponseDTO> getAllLeavesDTO() {

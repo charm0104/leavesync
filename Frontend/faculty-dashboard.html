@@ -440,7 +440,7 @@ opacity:1;
 <select id="leaveType">
 <option value="">Select Type</option>
 <option value="CL">Casual Leave</option>
-<option value="AL">Annual Leave</option>
+<option value="AL">Academic Leave</option>
 <option value="EL">Earned Leave</option>
 <option value="RH">Restricted Holiday</option>
 <option value="OD">On Duty</option>
@@ -591,6 +591,7 @@ let notifications = [];
 let selectedLeaveId = null;
 let notificationDropdownOpen = false;
 
+
 function getToken(){
   return localStorage.getItem('token');
 }
@@ -654,7 +655,8 @@ async function loadNotifications(){
   if (!token) return handleAuthError();
 
   try {
-    const response = await fetch(`${API_BASE}/notifications/my`, {
+const facultyId = localStorage.getItem("userId");
+    const response = await fetch(`http://localhost:8080/notifications/${facultyId}`, {
       headers: getAuthHeaders()
     });
     if (response.status === 401 || response.status === 403) return handleAuthError();
@@ -671,7 +673,7 @@ function renderNotifications(){
   const badge = document.getElementById('notificationBadge');
   if (!dropdown || !badge) return;
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter(n => !n.isRead).length;
   if (unreadCount > 0) {
     badge.style.display = 'flex';
     badge.innerText = unreadCount;
@@ -695,12 +697,24 @@ function renderNotifications(){
 }
 
 function handleNotificationClick(notificationId, leaveId){
+
+  const note = notifications.find(n => n.id == notificationId);
+
   if (notificationId) markNotificationRead(notificationId);
+
+  alert(`
+Status: ${note.status}
+Message: ${note.message}
+Remarks: ${note.remarks}
+`);
+
   notificationDropdownOpen = false;
   closeNotificationDropdown();
+
   selectedLeaveId = leaveId || null;
   showSection('history', document.querySelector('[onclick="showSection(\'history\',this)"]'));
 }
+
 
 async function markNotificationRead(id){
   try {
@@ -886,6 +900,8 @@ async function loadLeaveHistory(){
   const token = getToken();
   if (!token) return handleAuthError();
 
+  const userId = localStorage.getItem("userId");
+
   try {
     const response = await fetch(`${API_BASE}/leaves/history/${userId}`, {
       headers: getAuthHeaders()
@@ -999,6 +1015,8 @@ setInterval(() => {
   index = (index + 1) % slides.length;
   slides[index].classList.add('active');
 }, 3000);
+
+setInterval(loadNotifications, 5000);
 
 </script>
 
