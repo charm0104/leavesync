@@ -1,4 +1,4 @@
-LeaveSync – Online Platform for Leave Approval and Intimation to Stakeholders
+LeaveSync – Online Platform for Leave Approval
 
 --> Project Overview
 
@@ -10,11 +10,11 @@ In our institution, the process of managing faculty leave is still handled manua
 
 Due to the absence of a centralized digital system, authorities find it difficult to monitor leave patterns, analyze leave records, and ensure smooth academic operations. Therefore, there is a need for an automated and role-based system that enables faculty members to apply for leave online, allows the approving authority to review and approve or reject leave requests, and ensures timely intimation to relevant stakeholders such as the coordinator or administrative office for proper scheduling and management of classes.
 
-The proposed system aims to streamline the faculty leave approval process, improve transparency, maintain accurate records, and ensure effective communication among stakeholders through an online leave approval and stakeholder intimation platform.
+The proposed system aims to streamline the faculty leave approval process, improve transparency, maintain accurate records, and ensure effective communication among stakeholders through an online leave approval platform.
 
 --> Objectives
 
-The main objectives of the Online Platform for Leave Approval and Intimation to Stakeholders are:
+The main objectives of the Online Platform for Leave Approval are:
 
 1. To develop a role-based system that allows faculty members to apply for leave through an online platform.
 
